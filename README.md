@@ -1,11 +1,11 @@
-# Peluqueria Almáchar
+# Psicologia Velez
 ## Tematica
- - Peluquería 
+ - Psicologia 
 ## Objetivos
- - Es una aplicacion que sirve para gestionar las citas de una peluqueria
+ - Es una aplicacion que sirve para gestionar las citas de una psicologia
 ## Funcionalidades
 - Roles
-  - Admin: Podra ver todas las citas gestio
+  - Admin: Podra ver todas las citas gestion
   - Cliente: Podra ver sus citas
 - Vistas:
   - Home
@@ -29,13 +29,13 @@
  - Despliegue:
    - Docker
    - AWS Amazon
-## [Esquema entida-relación](https://github.com/nnavrio140/TFG-Peluqueria/wiki/Modelo-Entidad-Relaci%C3%B3n)
+## [Esquema entida-relación](https://github.com/aporcam0410/TFGdaw2/wiki/Modelo-Entidad-Relaci%C3%B3n)
 
-## [Documentación técnica](https://github.com/nnavrio140/TFG-Peluqueria/wiki/DOCUMENTACI%C3%93N-T%C3%89CNICA)
+## [Documentación técnica](https://github.com/aporcam0410/TFGdaw2/wiki/DOCUMENTACI%C3%93N-T%C3%89CNICA)
 
-## [Bitacora del proyecto](https://github.com/nnavrio140/TFG-Peluqueria/wiki/BIT%C3%81CORA-DEL-PROYECTO)
+## [Bitacora del proyecto](https://github.com/aporcam0410/TFGdaw2/wiki/BIT%C3%81CORA-DEL-PROYECTO)
 
 ## Bibliografía
 
 ## Autor
- - Nicolás Navarrete Ríos
+ - Antonio Gabriel Portillo Campos
