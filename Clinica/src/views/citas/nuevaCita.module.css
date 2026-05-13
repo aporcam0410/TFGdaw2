@@ -1,0 +1,200 @@
+.page { padding: 40px 0 60px; background: var(--color-bg); min-height: 70vh; }
+
+.topBar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+.titulo    { font-size: 1.8rem; font-weight: 800; color: var(--color-primary); }
+.subtitulo { font-size: 0.9rem; color: var(--color-text-muted); margin-top: 4px; }
+
+/* CARD PRINCIPAL */
+.reservaCard { padding: 0; overflow: hidden; }
+
+.reservaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* PANELES */
+.calPanel, .detPanel { padding: 32px; }
+.calPanel { border-right: 1px solid var(--color-border); }
+
+.panelTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 20px;
+}
+
+/* CALENDARIO */
+.calNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.calMonth { font-size: 0.95rem; font-weight: 600; color: var(--color-primary); }
+.calArrow {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.calArrow:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+.calGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 20px;
+}
+.calDow {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  padding: 6px 0;
+}
+.calDay {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.83rem;
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--color-text);
+  transition: all 0.15s;
+}
+.calDay:hover:not(:disabled) { background: #e8ecf4; }
+.calEmpty    { visibility: hidden; }
+.calPast     { color: var(--color-border) !important; cursor: not-allowed; }
+.calSelected { background: var(--color-primary) !important; color: white !important; font-weight: 700; }
+
+/* SLOTS */
+.slotsSection { border-top: 1px solid var(--color-border); padding-top: 16px; }
+.slotsTitle { font-size: 0.82rem; font-weight: 600; color: var(--color-primary); margin-bottom: 12px; }
+.slotsEmpty { font-size: 0.82rem; color: var(--color-text-muted); font-style: italic; }
+.slotsGrid  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+.slotBtn {
+  padding: 9px 6px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: white;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.slotBtn:hover   { border-color: var(--color-primary); color: var(--color-primary); }
+.slotBtnActive   { background: var(--color-primary) !important; border-color: var(--color-primary) !important; color: white !important; font-weight: 700; }
+
+/* DETALLES */
+.detBody { display: flex; flex-direction: column; gap: 18px; }
+
+.modalBtns { display: flex; gap: 8px; }
+.modalBtn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 8px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: white;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.modalBtnIcon { font-size: 1.3rem; }
+.modalBtn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.modalBtnActive { border-color: var(--color-primary) !important; background: #e8ecf4 !important; color: var(--color-primary) !important; font-weight: 600; }
+
+/* PSICÓLOGO */
+.psicBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: white;
+  min-height: 52px;
+}
+.psicAvatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: white;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+.psicInfo { flex: 1; }
+.psicNombre { font-size: 0.875rem; font-weight: 600; color: var(--color-primary); }
+.psicEsp    { font-size: 0.78rem; color: var(--color-text-muted); }
+.psicCheck  { margin-left: auto; color: var(--color-success); font-weight: 700; font-size: 1.1rem; }
+.psicEmpty  { font-size: 0.82rem; color: var(--color-text-muted); font-style: italic; }
+
+/* RESUMEN */
+.resumen {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #d1fae5;
+  border-radius: var(--radius-sm);
+  font-size: 0.83rem;
+  color: #065f46;
+  line-height: 1.5;
+}
+.resumen span { flex-shrink: 0; }
+
+.reservaBtn    { width: 100%; justify-content: center; }
+.cancelarLink  {
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  text-align: center;
+  text-decoration: underline;
+}
+.cancelarLink:hover { color: var(--color-primary); }
+
+/* FEATURES */
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  text-align: center;
+  margin-top: 40px;
+}
+.featItem { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.featIcon { font-size: 2rem; }
+.featItem h4 { font-size: 0.95rem; font-weight: 700; color: var(--color-primary); }
+.featItem p  { font-size: 0.82rem; color: var(--color-text-muted); line-height: 1.6; }
+
+@media (max-width: 960px) {
+  .reservaGrid { grid-template-columns: 1fr; }
+  .calPanel { border-right: none; border-bottom: 1px solid var(--color-border); }
+  .features { grid-template-columns: 1fr; gap: 20px; }
+}
+@media (max-width: 600px) {
+  .slotsGrid { grid-template-columns: repeat(2, 1fr); }
+  .calPanel, .detPanel { padding: 20px; }
+}

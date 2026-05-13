@@ -1,0 +1,235 @@
+.page { padding: 40px 0 60px; min-height: 60vh; background: var(--color-bg); }
+
+/* LAYOUT */
+.layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* SIDEBAR */
+.sidebar { position: sticky; top: 24px; }
+.filtrosCard { padding: 0; overflow: hidden; }
+
+.filtrosHeader {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+.filtrosHeader h3 { font-size: 0.95rem; font-weight: 700; color: var(--color-primary); margin-bottom: 2px; }
+.filtrosHeader p  { font-size: 0.78rem; color: var(--color-text-muted); }
+
+.filtrosNav { padding: 8px 0; }
+.filtroItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 20px;
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+.filtroItem:hover { background: var(--color-bg); }
+.filtroItemActive {
+  background: #e8ecf4 !important;
+  color: var(--color-primary) !important;
+  font-weight: 600;
+}
+.filtroIcon { font-size: 1rem; width: 20px; text-align: center; }
+
+.filtroPanel {
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.filtroPanel select,
+.filtroPanel input { width: 100%; font-size: 0.82rem; }
+
+.limpiarBtn {
+  background: none;
+  border: none;
+  font-size: 0.78rem;
+  color: var(--color-error);
+  cursor: pointer;
+  text-align: left;
+  padding: 2px 0;
+}
+.limpiarBtn:hover { text-decoration: underline; }
+
+/* MAIN */
+.main { min-width: 0; }
+
+.mainHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.mainHeader h1 { font-size: 1.6rem; font-weight: 800; color: var(--color-primary); margin-bottom: 4px; }
+.mainHeader p  { font-size: 0.875rem; color: var(--color-text-muted); }
+
+/* BANNER ÉXITO */
+.successBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #d1fae5;
+  color: #065f46;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+.successBanner button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #065f46;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* EMPTY */
+.empty {
+  padding: 48px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--color-text-muted);
+}
+.empty span { font-size: 2.5rem; }
+
+/* LISTA CITAS */
+.citasList { display: flex; flex-direction: column; gap: 12px; }
+
+.citaCard {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  border-left: 4px solid var(--color-accent);
+  flex-wrap: wrap;
+}
+
+.citaDateBlock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 200px;
+}
+.citaCalIcon { font-size: 1.3rem; flex-shrink: 0; }
+.citaFechaText { font-size: 0.95rem; font-weight: 700; color: var(--color-primary); }
+.citaHoraText  { font-size: 0.8rem; color: var(--color-text-muted); margin-top: 2px; }
+
+.citaCols {
+  display: flex;
+  gap: 32px;
+  flex: 1;
+}
+.citaCol { display: flex; flex-direction: column; gap: 3px; min-width: 80px; }
+.colLabel { font-size: 0.68rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.colVal   { font-size: 0.875rem; color: var(--color-primary); font-weight: 500; }
+
+.citaRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.anularIconBtn {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.anularIconBtn:hover { border-color: var(--color-error); color: var(--color-error); }
+
+/* MODALES */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal {
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 36px 32px 28px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  text-align: center;
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(-8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modalIcon, .modalIconWarn { font-size: 2.8rem; margin-bottom: 12px; }
+.modalTitle {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin-bottom: 10px;
+}
+.modalDesc {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+.modalWarn {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin-bottom: 24px;
+}
+.modalActions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+.modalActions .btn { flex: 1; justify-content: center; }
+
+.btnDanger {
+  background: var(--color-error);
+  color: white;
+  border-color: var(--color-error);
+}
+.btnDanger:hover { background: #b91c1c; border-color: #b91c1c; }
+
+@media (max-width: 960px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+  .citaCols { gap: 16px; }
+}
+@media (max-width: 600px) {
+  .citaCard { flex-direction: column; align-items: flex-start; }
+  .citaRight { margin-left: 0; flex-direction: row; align-items: center; }
+}

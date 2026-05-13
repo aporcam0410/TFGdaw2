@@ -1,0 +1,151 @@
+.page { overflow: hidden; }
+
+/* HERO */
+.hero {
+  background: white;
+  padding: 80px 0;
+}
+.heroInner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.heroText h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--color-primary);
+  margin-bottom: 20px;
+}
+.accent { color: var(--color-accent); }
+.heroText p {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  margin-bottom: 32px;
+  line-height: 1.7;
+}
+.heroBtns { display: flex; gap: 16px; flex-wrap: wrap; }
+.heroImg { display: flex; justify-content: flex-end; }
+.heroImgPlaceholder {
+  width: 100%;
+  max-width: 480px;
+  height: 360px;
+  background: linear-gradient(135deg, #e8f4f6 0%, #d0edf1 100%);
+  border-radius: var(--radius-lg);
+}
+
+/* MISIÓN */
+.mision {
+  background: var(--color-bg);
+  padding: 80px 0;
+  text-align: center;
+}
+.misionInner {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.badge {
+  display: inline-block;
+  padding: 6px 18px;
+  background: #e0f5f7;
+  color: var(--color-accent-dark);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.misionInner h2 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+.misionInner p { color: var(--color-text-muted); line-height: 1.7; }
+
+/* ESPECIALIDADES */
+.especialidades { background: white; }
+.especGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.especCard {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.especCard:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.especCardActive {
+  background: var(--color-primary);
+  color: white;
+}
+.especCardActive h3, .especCardActive p { color: white; }
+.especIcon { font-size: 1.6rem; }
+.especCard h3 { font-size: 1.1rem; font-weight: 700; color: var(--color-primary); }
+.especCardActive h3 { color: white; }
+.especCard p { font-size: 0.9rem; color: var(--color-text-muted); flex: 1; }
+.especCardActive p { color: rgba(255,255,255,0.8); }
+.especLink { font-size: 0.85rem; font-weight: 600; color: var(--color-accent); }
+.especCardActive .especLink { color: rgba(255,255,255,0.9); }
+
+/* PSICÓLOGOS */
+.psicSection { background: var(--color-bg); }
+.psicHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 40px;
+}
+.psicCard { overflow: hidden; padding: 0; }
+.psicPhoto {
+  width: 100%;
+  height: 220px;
+  background: linear-gradient(135deg, #c8e6ea 0%, #a8d8de 100%);
+}
+.psicInfo { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.psicInfo h3 { font-size: 1.05rem; font-weight: 700; color: var(--color-primary); }
+.psicInfo p { font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.5; }
+.psicBtn {
+  display: inline-block;
+  padding: 8px 20px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  color: var(--color-primary);
+  transition: all 0.2s;
+}
+.psicBtn:hover { border-color: var(--color-primary); background: var(--color-primary); color: white; }
+
+/* CTA */
+.cta { padding: 80px 0; background: var(--color-bg); }
+.ctaBox {
+  background: linear-gradient(135deg, #e8ecf4 0%, #d8eef1 100%);
+  border-radius: var(--radius-lg);
+  padding: 64px 48px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.ctaBox h2 { font-size: 1.8rem; font-weight: 700; color: var(--color-primary); }
+.ctaBox p { color: var(--color-text-muted); max-width: 480px; }
+
+@media (max-width: 960px) {
+  .heroInner { grid-template-columns: 1fr; }
+  .heroImg { display: none; }
+  .especGrid { grid-template-columns: repeat(2, 1fr); }
+  .psicHeader { flex-direction: column; align-items: flex-start; gap: 16px; }
+}
+@media (max-width: 600px) {
+  .heroText h1 { font-size: 2rem; }
+  .especGrid { grid-template-columns: 1fr; }
+  .ctaBox { padding: 40px 24px; }
+}
