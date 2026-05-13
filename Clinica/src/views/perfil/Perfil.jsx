@@ -1,31 +1,54 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { usuariosApi } from '../../utils/api'
+import { authApi, usuariosApi } from '../../utils/api'
 import styles from './perfil.module.css'
 
+const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+
+const formatFecha = (dateStr) => {
+  if (!dateStr) return '—'
+  const d = new Date(dateStr + 'T00:00:00')
+  return `${String(d.getDate()).padStart(2,'0')} de ${MESES[d.getMonth()]}, ${d.getFullYear()}`
+}
+
+const formatMiembro = (dateStr) => {
+  if (!dateStr) return ''
+  const d = new Date(dateStr + 'T00:00:00')
+  return `Miembro desde ${MESES[d.getMonth()]} ${d.getFullYear()}`
+}
+
 export default function Perfil() {
-  const { usuario, updateUsuario } = useAuth()
+  const { usuario, updateUsuario, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const [editando, setEditando] = useState(false)
   const [form, setForm] = useState({
-    nombre: usuario?.nombre ?? '',
-    apellidos: usuario?.apellidos ?? '',
-    telefono: usuario?.telefono ?? '',
-    fecha_nacimiento: usuario?.fecha_nacimiento ?? '',
+    nombre:           usuario?.nombre           ?? '',
+    apellidos:        usuario?.apellidos         ?? '',
+    telefono:         usuario?.telefono          ?? '',
+    fecha_nacimiento: usuario?.fecha_nacimiento  ?? '',
   })
-  const [success, setSuccess] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [success, setSuccess]   = useState('')
+  const [error,   setError]     = useState('')
+  const [loading, setLoading]   = useState(false)
+
+  const [cambiarPass, setCambiarPass] = useState(false)
+  const [passForm, setPassForm]       = useState({ password: '', password_confirm: '' })
+  const [passError, setPassError]     = useState('')
+  const [passSaving, setPassSaving]   = useState(false)
+  const [copied, setCopied]           = useState(false)
 
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
 
   const handleSubmit = async e => {
     e.preventDefault()
-    setError('')
-    setSuccess('')
-    setLoading(true)
+    setError(''); setSuccess(''); setLoading(true)
     try {
       const res = await usuariosApi.update(usuario.id, form)
       updateUsuario(res.data)
       setSuccess('Perfil actualizado correctamente.')
+      setEditando(false)
     } catch {
       setError('No se pudo actualizar el perfil.')
     } finally {
@@ -33,83 +56,159 @@ export default function Perfil() {
     }
   }
 
+  const handlePassSave = async () => {
+    if (passForm.password !== passForm.password_confirm) { setPassError('Las contraseñas no coinciden.'); return }
+    if (passForm.password.length < 6) { setPassError('Mínimo 6 caracteres.'); return }
+    setPassError(''); setPassSaving(true)
+    try {
+      await usuariosApi.update(usuario.id, { password: passForm.password })
+      setCambiarPass(false)
+      setPassForm({ password: '', password_confirm: '' })
+    } catch {
+      setPassError('Error al cambiar la contraseña.')
+    } finally {
+      setPassSaving(false)
+    }
+  }
+
+  const handleLogout = async () => {
+    try { await authApi.logout() } catch {}
+    logout()
+    navigate('/login')
+  }
+
+  const copyEmail = () => {
+    navigator.clipboard.writeText(usuario?.email ?? '')
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const cancelEdit = () => {
+    setForm({ nombre: usuario?.nombre ?? '', apellidos: usuario?.apellidos ?? '', telefono: usuario?.telefono ?? '', fecha_nacimiento: usuario?.fecha_nacimiento ?? '' })
+    setError(''); setSuccess(''); setEditando(false)
+  }
+
   return (
     <div className={styles.page}>
-      <section className={styles.hero}>
-        <div className="container">
-          <div className={styles.heroAvatar}>
-            <div className={styles.avatar}>
-              {usuario?.nombre?.charAt(0)?.toUpperCase() ?? 'U'}
-            </div>
-            <div>
-              <h1>{usuario?.nombre} {usuario?.apellidos}</h1>
-              <p>{usuario?.email}</p>
-              {usuario?.is_admin && <span className="badge badge-accent">Administrador</span>}
-            </div>
+
+      {/* HERO CARD */}
+      <div className="container">
+        <div className={`card ${styles.heroCard}`}>
+          <h1 className={styles.heroNombre}>{usuario?.nombre} {usuario?.apellidos}</h1>
+          <p className={styles.heroSub}>{formatMiembro(usuario?.fecha_registro)}</p>
+          <div className={styles.heroBtns}>
+            <button className={`btn btn-primary ${styles.btnEdit}`} onClick={() => { setEditando(e => !e); setSuccess(''); setError('') }}>
+              ✏️ {editando ? 'Cancelar edición' : 'Editar Perfil'}
+            </button>
+            <button className={`btn ${styles.btnLogout}`} onClick={handleLogout}>
+              ↗ Cerrar Sesión
+            </button>
           </div>
+          {success && <p className={styles.successMsg}>{success}</p>}
         </div>
-      </section>
+      </div>
 
-      <section className="section">
-        <div className="container">
-          <div className={styles.grid}>
+      {/* GRID */}
+      <div className="container">
+        <div className={styles.grid}>
 
-            <div className={`card ${styles.formCard}`}>
-              <h2>Datos personales</h2>
-              <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.row}>
-                  <div className="form-group">
-                    <label className="form-label">Nombre</label>
-                    <input type="text" name="nombre" value={form.nombre} onChange={handleChange} required />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Apellidos</label>
-                    <input type="text" name="apellidos" value={form.apellidos} onChange={handleChange} />
-                  </div>
+          {/* IZQUIERDA — INFORMACIÓN PERSONAL */}
+          <div className={`card ${styles.infoCard}`}>
+            <h2 className={styles.cardTitle}><span>📄</span> Información Personal</h2>
+
+            <form onSubmit={handleSubmit} className={styles.form}>
+              <div className="form-group">
+                <label className="form-label">Nombre</label>
+                {editando
+                  ? <input name="nombre" value={form.nombre} onChange={handleChange} required />
+                  : <div className={styles.field}>{usuario?.nombre} {usuario?.apellidos}</div>}
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Rol de Usuario</label>
+                <div className={styles.field}>{usuario?.is_admin ? 'Administrador' : 'Paciente'}</div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Email</label>
+                <div className={styles.fieldRow}>
+                  <div className={`${styles.field} ${styles.fieldFlex}`}>{usuario?.email}</div>
+                  <button type="button" className={styles.copyBtn} onClick={copyEmail} title="Copiar email">
+                    {copied ? '✓' : '⧉'}
+                  </button>
                 </div>
-                <div className={styles.row}>
-                  <div className="form-group">
-                    <label className="form-label">Teléfono</label>
-                    <input type="tel" name="telefono" value={form.telefono} onChange={handleChange} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Fecha de nacimiento</label>
-                    <input type="date" name="fecha_nacimiento" value={form.fecha_nacimiento} onChange={handleChange} />
-                  </div>
+              </div>
+
+              <div className={styles.row}>
+                <div className="form-group">
+                  <label className="form-label">Teléfono</label>
+                  {editando
+                    ? <input name="telefono" value={form.telefono} onChange={handleChange} />
+                    : <div className={styles.field}>{usuario?.telefono || '—'}</div>}
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Correo electrónico</label>
-                  <input type="email" value={usuario?.email ?? ''} disabled />
+                  <label className="form-label">Fecha de Nacimiento</label>
+                  {editando
+                    ? <input type="date" name="fecha_nacimiento" value={form.fecha_nacimiento} onChange={handleChange} />
+                    : <div className={styles.field}>{formatFecha(usuario?.fecha_nacimiento)}</div>}
                 </div>
-                {success && <p className={styles.successMsg}>{success}</p>}
-                {error && <p className="form-error">{error}</p>}
-                <button type="submit" className="btn btn-primary" disabled={loading}>
-                  {loading ? 'Guardando...' : 'Guardar cambios'}
-                </button>
-              </form>
+              </div>
+
+              {editando && (
+                <div className={styles.editActions}>
+                  {error && <p className="form-error">{error}</p>}
+                  <div style={{display:'flex', gap:'10px'}}>
+                    <button type="button" className="btn btn-outline" onClick={cancelEdit}>Cancelar</button>
+                    <button type="submit" className="btn btn-primary" disabled={loading}>
+                      {loading ? 'Guardando...' : 'Guardar cambios'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </form>
+          </div>
+
+          {/* DERECHA — CUENTA */}
+          <div className={`card ${styles.cuentaCard}`}>
+            <h2 className={styles.cardTitle}><span>🔒</span> Cuenta</h2>
+
+            <div className="form-group">
+              <label className="form-label">Contraseña</label>
+              {cambiarPass ? (
+                <div className={styles.passForm}>
+                  <input type="password" placeholder="Nueva contraseña" value={passForm.password}
+                    onChange={e => setPassForm(f => ({ ...f, password: e.target.value }))} />
+                  <input type="password" placeholder="Repetir contraseña" value={passForm.password_confirm}
+                    onChange={e => setPassForm(f => ({ ...f, password_confirm: e.target.value }))} />
+                  {passError && <p className="form-error">{passError}</p>}
+                  <div style={{display:'flex', gap:'8px'}}>
+                    <button type="button" className="btn btn-outline" style={{flex:1}} onClick={() => { setCambiarPass(false); setPassError('') }}>Cancelar</button>
+                    <button type="button" className="btn btn-primary" style={{flex:1}} onClick={handlePassSave} disabled={passSaving}>
+                      {passSaving ? 'Guardando...' : 'Guardar'}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className={styles.fieldRow}>
+                  <div className={`${styles.field} ${styles.fieldFlex}`}>••••••••</div>
+                  <button type="button" className={styles.changeBtn} onClick={() => setCambiarPass(true)}>Cambiar</button>
+                </div>
+              )}
             </div>
 
-            <div className={`card ${styles.infoCard}`}>
-              <h2>Información de la cuenta</h2>
-              <ul className={styles.infoList}>
-                <li>
-                  <span className={styles.infoLabel}>Miembro desde</span>
-                  <span>{usuario?.fecha_registro?.split('T')[0] ?? '—'}</span>
-                </li>
-                <li>
-                  <span className={styles.infoLabel}>Rol</span>
-                  <span>{usuario?.is_admin ? 'Administrador' : 'Paciente'}</span>
-                </li>
-                <li>
-                  <span className={styles.infoLabel}>Email</span>
-                  <span>{usuario?.email}</span>
-                </li>
-              </ul>
+            <div className="form-group">
+              <label className="form-label">Fecha de Registro</label>
+              <div className={styles.field}>
+                <span className={styles.fieldIcon}>📅</span>
+                {formatFecha(usuario?.fecha_registro)}
+              </div>
             </div>
 
           </div>
+
         </div>
-      </section>
+      </div>
+
     </div>
   )
 }

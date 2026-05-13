@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Controllers\Api\ModalidadController;
 use App\Http\Controllers\Api\DisponibilidadController;
 use App\Http\Controllers\Api\ContactoController;
+use App\Models\EstadoCita;
 
 // Públicas
 Route::post('/register', [AuthController::class, 'register']);
@@ -18,6 +19,7 @@ Route::get('/servicios/{servicio}',  [ServicioController::class,  'show']);
 Route::get('/psicologos',            [PsicologoController::class, 'index']);
 Route::get('/psicologos/{psicologo}',[PsicologoController::class, 'show']);
 Route::get('/modalidades',           [ModalidadController::class, 'index']);
+Route::get('/estados-cita',          fn() => response()->json(EstadoCita::all()));
 Route::post('/contacto',             [ContactoController::class,  'send']);
 
 // Protegidas (usuario autenticado)

@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
-import { usuariosApi, psicologosApi, serviciosApi, citasApi } from '../../utils/api'
+import { usuariosApi, psicologosApi, serviciosApi, citasApi, estadosCitaApi, modalidadesApi } from '../../utils/api'
+import EditCitaModal from './EditCitaModal'
+import CreateCitaModal from './CreateCitaModal'
 import styles from './admin.module.css'
 
 const TABS = ['Usuarios', 'Psicólogos', 'Servicios', 'Citas']
 
-const INITIAL_PSICOLOGO = { nombre: '', especialidad: '', email: '', telefono: '', descripcion: '' }
+const INITIAL_PSICOLOGO = { nombre: '', especialidad: '', email: '', telefono: '', descripcion: '', servicios_ids: [] }
 const INITIAL_SERVICIO  = { nombre_servicio: '', descripcion: '', precio: '', duracion_min: '' }
+const INITIAL_USUARIO   = { nombre: '', apellidos: '', email: '', telefono: '', is_admin: 0 }
 
 export default function Admin() {
   const [tab, setTab] = useState('Usuarios')
@@ -15,6 +18,16 @@ export default function Admin() {
   const [form, setForm] = useState({})
   const [formError, setFormError] = useState('')
   const [saving, setSaving] = useState(false)
+  const [editCita,   setEditCita]   = useState(null)
+  const [createCita, setCreateCita] = useState(false)
+  const [estadosCita,    setEstadosCita]    = useState([])
+  const [todosServicios, setTodosServicios] = useState([])
+  const [fotoFile,       setFotoFile]       = useState(null)
+
+  useEffect(() => {
+    estadosCitaApi.getAll().then(r => setEstadosCita(r.data)).catch(() => {})
+    serviciosApi.getAll().then(r => setTodosServicios(r.data)).catch(() => {})
+  }, [])
 
   const apis = { Usuarios: usuariosApi, 'Psicólogos': psicologosApi, Servicios: serviciosApi, Citas: citasApi }
 
@@ -26,14 +39,24 @@ export default function Admin() {
   useEffect(() => { load(tab) }, [tab])
 
   const openCreate = () => {
-    setForm(tab === 'Psicólogos' ? INITIAL_PSICOLOGO : INITIAL_SERVICIO)
+    setForm(tab === 'Psicólogos' ? INITIAL_PSICOLOGO : tab === 'Usuarios' ? INITIAL_USUARIO : INITIAL_SERVICIO)
     setFormError('')
+    setFotoFile(null)
     setModal('create')
   }
 
   const openEdit = item => {
-    setForm({ ...item })
+    if (tab === 'Citas') {
+      setEditCita(item)
+      return
+    }
+    let f = { ...item }
+    if (tab === 'Psicólogos') {
+      f.servicios_ids = (item.servicios ?? []).map(s => s.id_servicio)
+    }
+    setForm(f)
     setFormError('')
+    setFotoFile(null)
     setModal('edit')
   }
 
@@ -47,8 +70,16 @@ export default function Admin() {
     setFormError('')
     setSaving(true)
     try {
-      if (modal === 'create') await apis[tab].create(form)
-      else await apis[tab].update(form.id ?? form.id_psicologo ?? form.id_servicio, form)
+      const id = form.id ?? form.id_psicologo ?? form.id_servicio
+      let payload = form
+      if (tab === 'Usuarios') {
+        payload = { name: form.nombre, apellidos: form.apellidos, email: form.email, telefono: form.telefono, id_rol: Number(form.id_rol) }
+      } else if (tab === 'Psicólogos') {
+        payload = { ...form }
+        if (fotoFile) payload.fotoFile = fotoFile
+      }
+      if (modal === 'create') await apis[tab].create(payload)
+      else await apis[tab].update(id, payload)
       setModal(null)
       load()
     } catch (err) {
@@ -71,7 +102,7 @@ export default function Admin() {
           <thead>
             <tr>
               {tab === 'Usuarios'   && <><th>Nombre</th><th>Email</th><th>Teléfono</th><th>Fecha registro</th><th>Rol</th><th>Acciones</th></>}
-              {tab === 'Psicólogos' && <><th>Nombre del profesional</th><th>Especialidad</th><th>Email</th><th>Teléfono</th><th>Acciones</th></>}
+              {tab === 'Psicólogos' && <><th>Nombre del profesional</th><th>Especialidad</th><th>Servicios</th><th>Email</th><th>Acciones</th></>}
               {tab === 'Servicios'  && <><th>Servicio</th><th>Descripción</th><th>Duración</th><th>Precio</th><th>Acciones</th></>}
               {tab === 'Citas'      && <><th>Paciente</th><th>Psicólogo</th><th>Servicio</th><th>Fecha y hora</th><th>Modalidad</th><th>Estado</th><th>Precio</th><th>Acciones</th></>}
             </tr>
@@ -80,40 +111,41 @@ export default function Admin() {
             {data.map(item => (
               <tr key={idOf(item)}>
                 {tab === 'Usuarios' && (<>
-                  <td><div className={styles.nameCell}>{item.nombre} {item.apellidos}<span>{item.email}</span></div></td>
-                  <td>{item.email}</td>
-                  <td>{item.telefono ?? '—'}</td>
-                  <td>{item.fecha_registro ?? '—'}</td>
-                  <td><span className={`badge ${item.is_admin ? 'badge-warning' : 'badge-accent'}`}>{item.is_admin ? 'Admin' : 'Paciente'}</span></td>
+                  <td data-label="Nombre"><div className={styles.nameCell}>{item.nombre} {item.apellidos}<span>{item.email}</span></div></td>
+                  <td data-label="Email">{item.email}</td>
+                  <td data-label="Teléfono">{item.telefono ?? '—'}</td>
+                  <td data-label="Registro">{item.fecha_registro ?? '—'}</td>
+                  <td data-label="Rol"><span className={`badge ${item.is_admin ? 'badge-warning' : 'badge-accent'}`}>{item.is_admin ? 'Admin' : 'Paciente'}</span></td>
                 </>)}
                 {tab === 'Psicólogos' && (<>
-                  <td><strong>{item.nombre}</strong></td>
-                  <td><span className="badge badge-accent">{item.especialidad}</span></td>
-                  <td>{item.email}</td>
-                  <td>{item.telefono ?? '—'}</td>
+                  <td data-label="Nombre"><strong>{item.nombre}</strong></td>
+                  <td data-label="Especialidad">{item.especialidad ? <span className="badge badge-accent">{item.especialidad}</span> : '—'}</td>
+                  <td data-label="Servicios">
+                    {item.servicios?.length > 0
+                      ? <div style={{display:'flex',flexWrap:'wrap',gap:'4px'}}>{item.servicios.map(s => <span key={s.id_servicio} className="badge badge-primary">{s.nombre_servicio}</span>)}</div>
+                      : '—'}
+                  </td>
+                  <td data-label="Email">{item.email}</td>
                 </>)}
                 {tab === 'Servicios' && (<>
-                  <td><strong>{item.nombre_servicio}</strong></td>
-                  <td className={styles.descCell}>{item.descripcion ?? '—'}</td>
-                  <td>{item.duracion_min} min</td>
-                  <td>{item.precio}€ / sesión</td>
+                  <td data-label="Servicio"><strong>{item.nombre_servicio}</strong></td>
+                  <td data-label="Descripción" className={styles.descCell}>{item.descripcion ?? '—'}</td>
+                  <td data-label="Duración">{item.duracion_min} min</td>
+                  <td data-label="Precio">{item.precio}€ / sesión</td>
                 </>)}
                 {tab === 'Citas' && (<>
-                  <td><div className={styles.nameCell}>{item.usuario?.nombre ?? '—'}<span>ID #{item.id_cita}</span></div></td>
-                  <td>{item.psicologo?.nombre ?? '—'}</td>
-                  <td>{item.servicio?.nombre_servicio ?? '—'}</td>
-                  <td>{item.fecha} {item.hora}</td>
-                  <td>{item.modalidad?.nombre_modalidad ?? '—'}</td>
-                  <td><span className={`badge ${
-                    item.estado?.nombre_estado === 'Aprobado'   ? 'badge-success' :
-                    item.estado?.nombre_estado === 'Finalizado' ? 'badge-primary' : 'badge-error'
+                  <td data-label="Paciente"><div className={styles.nameCell}>{item.usuario?.nombre ?? '—'}<span>ID #{item.id_cita}</span></div></td>
+                  <td data-label="Psicólogo">{item.psicologo?.nombre ?? '—'}</td>
+                  <td data-label="Servicio">{item.servicio?.nombre_servicio ?? '—'}</td>
+                  <td data-label="Fecha">{item.fecha} {item.hora}</td>
+                  <td data-label="Modalidad">{item.modalidad?.nombre_modalidad ?? '—'}</td>
+                  <td data-label="Estado"><span className={`badge ${
+                    item.estado?.nombre_estado === 'Confirmada' ? 'badge-success' : 'badge-primary'
                   }`}>{item.estado?.nombre_estado}</span></td>
-                  <td>{item.precio_final}€</td>
+                  <td data-label="Precio">{item.precio_final}€</td>
                 </>)}
-                <td className={styles.actions}>
-                  {tab !== 'Usuarios' && tab !== 'Citas' && (
-                    <button className={`btn btn-ghost ${styles.editBtn}`} onClick={() => openEdit(item)}>Editar</button>
-                  )}
+                <td data-label="Acciones" className={styles.actions}>
+                  <button className={`btn btn-ghost ${styles.editBtn}`} onClick={() => openEdit(item)}>Editar</button>
                   <button className={`btn btn-ghost ${styles.deleteBtn}`} onClick={() => handleDelete(idOf(item))}>Eliminar</button>
                 </td>
               </tr>
@@ -124,7 +156,7 @@ export default function Admin() {
     )
   }
 
-  const canCreate = tab === 'Psicólogos' || tab === 'Servicios'
+  const canCreate = tab === 'Psicólogos' || tab === 'Servicios' || tab === 'Citas'
 
   return (
     <div className={styles.layout}>
@@ -149,17 +181,50 @@ export default function Admin() {
         <div className={styles.mainHeader}>
           <h1>Gestión de {tab}</h1>
           {canCreate && (
-            <button className="btn btn-primary" onClick={openCreate}>+ Añadir {tab === 'Psicólogos' ? 'Psicólogo' : 'Servicio'}</button>
+            <button className="btn btn-primary" onClick={tab === 'Citas' ? () => setCreateCita(true) : openCreate}>
+              + Añadir {tab === 'Psicólogos' ? 'Psicólogo' : tab === 'Citas' ? 'Cita' : 'Servicio'}
+            </button>
           )}
         </div>
         {renderTable()}
       </main>
 
       {modal && (
-        <div className={styles.overlay} onClick={() => setModal(null)}>
+        <div className={styles.overlay} onClick={() => { setModal(null); setFotoFile(null) }}>
           <div className={styles.modalBox} onClick={e => e.stopPropagation()}>
-            <h2>{modal === 'create' ? 'Nuevo' : 'Editar'} {tab === 'Psicólogos' ? 'psicólogo' : 'servicio'}</h2>
+            <h2>{modal === 'create' ? 'Nuevo' : 'Editar'} {tab === 'Psicólogos' ? 'psicólogo' : tab === 'Servicios' ? 'servicio' : 'usuario'}</h2>
             <form onSubmit={handleSave} className={styles.modalForm}>
+
+              {tab === 'Usuarios' && (<>
+                <div className={styles.row2}>
+                  <div className="form-group">
+                    <label className="form-label">Nombre</label>
+                    <input name="nombre" value={form.nombre ?? ''} onChange={handleChange} required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Apellidos</label>
+                    <input name="apellidos" value={form.apellidos ?? ''} onChange={handleChange} />
+                  </div>
+                </div>
+                <div className={styles.row2}>
+                  <div className="form-group">
+                    <label className="form-label">Email</label>
+                    <input type="email" name="email" value={form.email ?? ''} onChange={handleChange} required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Teléfono</label>
+                    <input name="telefono" value={form.telefono ?? ''} onChange={handleChange} />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Rol</label>
+                  <select name="id_rol" value={form.id_rol ?? 2} onChange={handleChange}>
+                    <option value={2}>Paciente</option>
+                    <option value={1}>Administrador</option>
+                  </select>
+                </div>
+              </>)}
+
 
               {tab === 'Psicólogos' && (<>
                 <div className={styles.row2}>
@@ -186,6 +251,34 @@ export default function Admin() {
                   <label className="form-label">Descripción</label>
                   <textarea name="descripcion" value={form.descripcion ?? ''} onChange={handleChange} rows={3} />
                 </div>
+                <div className="form-group">
+                  <label className="form-label">Servicios asignados</label>
+                  <div style={{display:'flex', flexDirection:'column', gap:'8px', marginTop:'4px'}}>
+                    {todosServicios.map(s => (
+                      <label key={s.id_servicio} style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'0.875rem', cursor:'pointer'}}>
+                        <input type="checkbox"
+                          checked={(form.servicios_ids ?? []).includes(s.id_servicio)}
+                          onChange={e => {
+                            const ids = form.servicios_ids ?? []
+                            setForm(f => ({ ...f, servicios_ids: e.target.checked ? [...ids, s.id_servicio] : ids.filter(id => id !== s.id_servicio) }))
+                          }}
+                        />
+                        {s.nombre_servicio}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Foto</label>
+                  {(fotoFile || form.foto) && (
+                    <img
+                      src={fotoFile ? URL.createObjectURL(fotoFile) : `/fotos/${form.foto}`}
+                      alt=""
+                      className={styles.fotoPreview}
+                    />
+                  )}
+                  <input type="file" accept="image/*" onChange={e => setFotoFile(e.target.files[0] ?? null)} />
+                </div>
               </>)}
 
               {tab === 'Servicios' && (<>
@@ -211,7 +304,7 @@ export default function Admin() {
 
               {formError && <p className="form-error">{formError}</p>}
               <div className={styles.modalActions}>
-                <button type="button" className="btn btn-outline" onClick={() => setModal(null)}>Cancelar</button>
+                <button type="button" className="btn btn-outline" onClick={() => { setModal(null); setFotoFile(null) }}>Cancelar</button>
                 <button type="submit" className="btn btn-primary" disabled={saving}>
                   {saving ? 'Guardando...' : 'Guardar'}
                 </button>
@@ -219,6 +312,21 @@ export default function Admin() {
             </form>
           </div>
         </div>
+      )}
+
+      {editCita && (
+        <EditCitaModal
+          cita={editCita}
+          onClose={() => setEditCita(null)}
+          onSaved={() => { setEditCita(null); load() }}
+        />
+      )}
+
+      {createCita && (
+        <CreateCitaModal
+          onClose={() => setCreateCita(false)}
+          onSaved={() => { setCreateCita(false); load() }}
+        />
       )}
     </div>
   )

@@ -24,7 +24,7 @@ class DisponibilidadController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'fecha'       => 'required|date|after:today',
+            'fecha'       => 'required|date|after_or_equal:today',
             'id_servicio' => 'required|exists:servicios,id_servicio',
         ]);
 
@@ -63,11 +63,19 @@ class DisponibilidadController extends Controller
         $inicioMin = (int)$hOpen  * 60 + (int)$mOpen;
         $cierreMin = (int)$hClose * 60 + (int)$mClose;
 
+        $esHoy      = Carbon::parse($fecha)->isToday();
+        $ahoraMin   = $esHoy ? (now()->hour * 60 + now()->minute) : 0;
+
         $slots   = [];
         $current = $inicioMin;
 
         while ($current + $servicio->duracion_min <= $cierreMin) {
             $hora = sprintf('%02d:%02d', intdiv($current, 60), $current % 60);
+
+            if ($esHoy && $current <= $ahoraMin) {
+                $current += $pasoMinutos;
+                continue;
+            }
 
             // Buscar el primer psicólogo libre a esa hora
             foreach ($psicologos as $psic) {

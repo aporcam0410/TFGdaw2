@@ -62,7 +62,7 @@ export default function Login() {
         </div>
       </div>
 
-      <div className={styles.imgSide}>
+      <div className={styles.imgSide} style={{ backgroundImage: "url('/fotos/login.webp')" }}>
         <div className={styles.imgOverlay}>
           <blockquote className={styles.quote}>
             "La curiosa paradoja es que cuando me acepto tal como soy, entonces puedo cambiar."

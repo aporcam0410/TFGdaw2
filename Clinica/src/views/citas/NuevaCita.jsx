@@ -62,7 +62,7 @@ export default function NuevaCita() {
     if (!d) return true
     const sel = new Date(year, month, d); sel.setHours(0,0,0,0)
     const t = new Date(); t.setHours(0,0,0,0)
-    return sel <= t
+    return sel < t
   }
 
   const handleReservar = async () => {

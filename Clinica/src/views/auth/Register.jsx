@@ -89,7 +89,7 @@ export default function Register() {
         </div>
       </div>
 
-      <div className={styles.imgSide}>
+      <div className={styles.imgSide} style={{ backgroundImage: "url('/fotos/registro.webp')" }}>
         <div className={styles.imgOverlay}>
           <blockquote className={styles.quote}>
             "El viaje de mil millas comienza con un solo paso."

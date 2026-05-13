@@ -4,13 +4,20 @@ import { psicologosApi, serviciosApi } from '../../utils/api'
 import styles from './home.module.css'
 
 const SERVICIO_ICONS = ['🌊', '☀️', '💼', '💚', '👫', '🧠', '🕊️', '💙']
+const SLIDES = ['/fotos/carrousel1.webp', '/fotos/carrousel2.webp', '/fotos/carrousel3.webp']
 
 export default function Home() {
   const [psicologos,    setPsicologos]    = useState([])
   const [especialidades, setEspecialidades] = useState([])
+  const [slide, setSlide] = useState(0)
 
   useEffect(() => {
-    psicologosApi.getAll().then(r => setPsicologos(r.data.slice(0, 3))).catch(() => {})
+    const t = setInterval(() => setSlide(s => (s + 1) % SLIDES.length), 4000)
+    return () => clearInterval(t)
+  }, [])
+
+  useEffect(() => {
+    psicologosApi.getAll().then(r => setPsicologos(r.data.slice(-3))).catch(() => {})
     serviciosApi.getAll().then(r => {
       const lista = r.data.slice(-6)
       setEspecialidades(lista.map((s, i) => ({
@@ -37,7 +44,16 @@ export default function Home() {
               </div>
             </div>
             <div className={styles.heroImg}>
-              <div className={styles.heroImgPlaceholder} />
+              <div className={styles.carousel}>
+                {SLIDES.map((src, i) => (
+                  <img key={i} src={src} alt="" className={`${styles.carouselImg} ${i === slide ? styles.carouselActive : ''}`} />
+                ))}
+                <div className={styles.carouselDots}>
+                  {SLIDES.map((_, i) => (
+                    <button key={i} className={`${styles.dot} ${i === slide ? styles.dotActive : ''}`} onClick={() => setSlide(i)} />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -86,12 +102,13 @@ export default function Home() {
             <div className="grid-3">
               {psicologos.map(p => (
                 <div key={p.id_psicologo} className={`card ${styles.psicCard}`}>
-                  <div className={styles.psicPhoto} />
+                  {p.foto
+                    ? <img src={`/fotos/${p.foto}`} alt={p.nombre} className={styles.psicPhoto} />
+                    : <div className={styles.psicPhoto} />}
                   <div className={styles.psicInfo}>
                     <h3>{p.nombre}</h3>
-                    <span className="badge badge-accent">{p.especialidad}</span>
-                    <p>{p.descripcion ?? 'Profesional dedicado al bienestar emocional de sus pacientes.'}</p>
-                    <Link to="/psicologos" className={styles.psicBtn}>Ver Perfil</Link>
+                    {p.especialidad && <span className="badge badge-accent">{p.especialidad}</span>}
+                    <p>{p.descripcion || 'Profesional dedicado al bienestar emocional de sus pacientes.'}</p>
                   </div>
                 </div>
               ))}

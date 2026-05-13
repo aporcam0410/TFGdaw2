@@ -9,17 +9,15 @@ class EstadoCita extends Model
 {
     use HasFactory;
 
-    const APROBADO   = 'Aprobado';
-    const FINALIZADO = 'Finalizado';
-    const ANULADA    = 'Anulada';
+    const CONFIRMADA = 'Confirmada';
+    const FINALIZADA = 'Finalizada';
 
     protected $table = 'estados_cita';
     protected $primaryKey = 'id_estado';
     protected $fillable = ['nombre_estado'];
 
-    public static function aprobado():   self { return static::where('nombre_estado', self::APROBADO)->firstOrFail(); }
-    public static function finalizado(): self { return static::where('nombre_estado', self::FINALIZADO)->firstOrFail(); }
-    public static function anulada():    self { return static::where('nombre_estado', self::ANULADA)->firstOrFail(); }
+    public static function confirmada(): self { return static::where('nombre_estado', self::CONFIRMADA)->firstOrFail(); }
+    public static function finalizada(): self { return static::where('nombre_estado', self::FINALIZADA)->firstOrFail(); }
 
     public function citas()
     {

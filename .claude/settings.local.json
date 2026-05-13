@@ -10,7 +10,10 @@
       "PowerShell(docker exec clinica-psicologia-db-1 mysql -ularavel_user -plaravel_password clinica_psicologia_db -e \"DESCRIBE psicologos;\" 2>&1)",
       "PowerShell(docker exec clinica-psicologia-db-1 mysql -ularavel_user -plaravel_password clinica_psicologia_db -e \"SELECT id, name, email, id_rol FROM users;\" 2>&1)",
       "PowerShell(Invoke-RestMethod -Uri \"http://localhost:8090/api/login\" -Method POST -ContentType \"application/json\" -Body '{\"email\":\"admin@clinica.com\",\"password\":\"password\"}' 2>&1)",
-      "Bash(docker compose *)"
+      "Bash(docker compose *)",
+      "Bash(npm run *)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }; Write-Host \"Killed port 3000\")",
+      "Bash(docker exec *)"
     ]
   }
 }

@@ -162,6 +162,51 @@
 }
 .anularIconBtn:hover { border-color: var(--color-error); color: var(--color-error); }
 
+/* PAGINACIÓN */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.pageInfo {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+.pageNums {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.pageNum {
+  min-width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: white;
+  font-size: 0.85rem;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pageNum:hover { background: var(--color-bg); border-color: var(--color-primary); color: var(--color-primary); }
+.pageNumActive { background: var(--color-primary) !important; color: white !important; border-color: var(--color-primary) !important; font-weight: 700; }
+.pageBtn {
+  min-width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: white;
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pageBtn:hover:not(:disabled) { background: var(--color-bg); color: var(--color-primary); }
+.pageBtn:disabled { opacity: 0.35; cursor: default; }
+
 /* MODALES */
 .overlay {
   position: fixed;

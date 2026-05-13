@@ -9,11 +9,7 @@ class EstadoCitaSeeder extends Seeder
 {
     public function run(): void
     {
-        EstadoCita::firstOrCreate(['nombre_estado' => 'Pendiente']);
         EstadoCita::firstOrCreate(['nombre_estado' => 'Confirmada']);
-        EstadoCita::firstOrCreate(['nombre_estado' => 'Realizada']);
-        EstadoCita::firstOrCreate(['nombre_estado' => 'Anulada']);
-        EstadoCita::firstOrCreate(['nombre_estado' => 'Aprobado']);
         EstadoCita::firstOrCreate(['nombre_estado' => 'Finalizado']);
     }
 }

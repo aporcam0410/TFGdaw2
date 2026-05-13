@@ -6,15 +6,13 @@ import styles from './citas.module.css'
 const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 
 const ESTADO_COLOR = {
-  'Aprobado':   'badge-success',
-  'Finalizado': 'badge-primary',
-  'Anulada':    'badge-error',
+  'Confirmada': 'badge-success',
+  'Finalizada': 'badge-primary',
 }
 
 const ESTADO_LABEL = {
-  'Aprobado':   'Confirmada',
-  'Finalizado': 'Finalizada',
-  'Anulada':    'Anulada',
+  'Confirmada': 'Confirmada',
+  'Finalizada': 'Finalizada',
 }
 
 const MODALIDAD_ICONS = { 'Presencial': '👤', 'Online': '🖥️', 'Hibrida': '📞', 'Telefónica': '📞' }
@@ -44,6 +42,9 @@ export default function Citas() {
 
   const [modalConfirm, setModalConfirm] = useState(null)
   const [modalAviso,   setModalAviso]   = useState(false)
+  const [page,         setPage]         = useState(1)
+
+  const PAGE_SIZE = 5
 
   useEffect(() => {
     citasApi.getAll().then(r => setCitas(r.data)).catch(() => {})
@@ -76,9 +77,15 @@ export default function Citas() {
 
   const limpiarFiltros = () => {
     setFServicio(''); setFModalidad(''); setFPsicologo(''); setFFecha(''); setFEstado('')
+    setPage(1)
   }
 
   const hayFiltros = fServicio || fModalidad || fPsicologo || fFecha || fEstado
+
+  const totalPages   = Math.ceil(citasFiltradas.length / PAGE_SIZE)
+  const citasPagina  = citasFiltradas.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+  const handleFiltro = (setter) => (e) => { setter(e.target.value); setPage(1) }
 
   return (
     <div className={styles.page}>
@@ -108,32 +115,31 @@ export default function Citas() {
               {/* Panel del filtro activo */}
               <div className={styles.filtroPanel}>
                 {filtroActivo === 'servicio' && (
-                  <select value={fServicio} onChange={e => setFServicio(e.target.value)}>
+                  <select value={fServicio} onChange={handleFiltro(setFServicio)}>
                     <option value="">Todos los servicios</option>
                     {servicios.map(s => <option key={s.id_servicio} value={s.id_servicio}>{s.nombre_servicio}</option>)}
                   </select>
                 )}
                 {filtroActivo === 'modalidad' && (
-                  <select value={fModalidad} onChange={e => setFModalidad(e.target.value)}>
+                  <select value={fModalidad} onChange={handleFiltro(setFModalidad)}>
                     <option value="">Todas las modalidades</option>
                     {modalidades.map(m => <option key={m.id_modalidad} value={m.id_modalidad}>{m.nombre_modalidad}</option>)}
                   </select>
                 )}
                 {filtroActivo === 'psicologo' && (
-                  <select value={fPsicologo} onChange={e => setFPsicologo(e.target.value)}>
+                  <select value={fPsicologo} onChange={handleFiltro(setFPsicologo)}>
                     <option value="">Todos los psicólogos</option>
                     {psicologos.map(p => <option key={p.id_psicologo} value={p.id_psicologo}>{p.nombre}</option>)}
                   </select>
                 )}
                 {filtroActivo === 'fecha' && (
-                  <input type="date" value={fFecha} onChange={e => setFFecha(e.target.value)} />
+                  <input type="date" value={fFecha} onChange={handleFiltro(setFFecha)} />
                 )}
                 {filtroActivo === 'estado' && (
-                  <select value={fEstado} onChange={e => setFEstado(e.target.value)}>
+                  <select value={fEstado} onChange={handleFiltro(setFEstado)}>
                     <option value="">Todos los estados</option>
-                    <option value="Aprobado">Confirmada</option>
-                    <option value="Finalizado">Finalizada</option>
-                    <option value="Anulada">Anulada</option>
+                    <option value="Confirmada">Confirmada</option>
+                    <option value="Finalizada">Finalizada</option>
                   </select>
                 )}
                 {hayFiltros && (
@@ -169,8 +175,9 @@ export default function Citas() {
                 {!hayFiltros && <Link to="/citas/nueva" className="btn btn-primary">Reservar mi primera cita</Link>}
               </div>
             ) : (
+              <>
               <div className={styles.citasList}>
-                {citasFiltradas.map(c => {
+                {citasPagina.map(c => {
                   const partes = c.fecha?.split('-') ?? []
                   const dia  = partes[2]
                   const mes  = MESES[parseInt(partes[1]) - 1]
@@ -212,7 +219,7 @@ export default function Citas() {
                         <span className={`badge ${ESTADO_COLOR[c.estado?.nombre_estado] ?? 'badge-primary'}`}>
                           {ESTADO_LABEL[c.estado?.nombre_estado] ?? c.estado?.nombre_estado}
                         </span>
-                        {c.estado?.nombre_estado === 'Aprobado' && (
+                        {c.estado?.nombre_estado === 'Confirmada' && (
                           <button className={styles.anularIconBtn} onClick={() => handleAnularClick(c)} title="Anular cita">✕</button>
                         )}
                       </div>
@@ -220,6 +227,22 @@ export default function Citas() {
                   )
                 })}
               </div>
+
+              {totalPages > 1 && (
+                <div className={styles.pagination}>
+                  <span className={styles.pageInfo}>
+                    {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, citasFiltradas.length)} de {citasFiltradas.length} citas
+                  </span>
+                  <div className={styles.pageNums}>
+                    <button className={styles.pageBtn} disabled={page === 1} onClick={() => setPage(p => p - 1)}>‹</button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                      <button key={n} className={`${styles.pageNum} ${n === page ? styles.pageNumActive : ''}`} onClick={() => setPage(n)}>{n}</button>
+                    ))}
+                    <button className={styles.pageBtn} disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>›</button>
+                  </div>
+                </div>
+              )}
+              </>
             )}
           </main>
         </div>

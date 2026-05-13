@@ -27,11 +27,32 @@ class PsicologoController extends Controller
             'email'       => 'required|email|unique:psicologos,email',
             'telefono'    => 'nullable|string|max:20',
             'descripcion' => 'nullable|string',
-            'foto'        => 'nullable|string',
+            'foto'        => 'nullable|image|max:2048',
+            'servicios'   => 'nullable|array',
+            'servicios.*' => 'exists:servicios,id_servicio',
         ]);
 
+        $servicios = $data['servicios'] ?? null;
+        unset($data['servicios']);
+
+        if ($request->hasFile('foto')) {
+            $fotosDir = public_path('fotos');
+            if (!is_dir($fotosDir)) mkdir($fotosDir, 0755, true);
+            $file = $request->file('foto');
+            $filename = time() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
+            $file->move($fotosDir, $filename);
+            $data['foto'] = $filename;
+        } else {
+            unset($data['foto']);
+        }
+
         $psicologo = Psicologo::create($data);
-        return response()->json($this->format($psicologo), 201);
+
+        if ($servicios !== null) {
+            $psicologo->servicios()->sync($servicios);
+        }
+
+        return response()->json($this->format($psicologo->load('servicios')), 201);
     }
 
     public function update(Request $request, Psicologo $psicologo)
@@ -42,11 +63,35 @@ class PsicologoController extends Controller
             'email'       => 'sometimes|email|unique:psicologos,email,' . $psicologo->id_psicologo . ',id_psicologo',
             'telefono'    => 'nullable|string|max:20',
             'descripcion' => 'nullable|string',
-            'foto'        => 'nullable|string',
+            'foto'        => 'nullable|image|max:2048',
+            'servicios'   => 'nullable|array',
+            'servicios.*' => 'exists:servicios,id_servicio',
         ]);
 
+        if ($request->hasFile('foto')) {
+            if ($psicologo->foto && file_exists(public_path('fotos/' . $psicologo->foto))) {
+                unlink(public_path('fotos/' . $psicologo->foto));
+            }
+            $fotosDir = public_path('fotos');
+            if (!is_dir($fotosDir)) mkdir($fotosDir, 0755, true);
+            $file = $request->file('foto');
+            $filename = time() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
+            $file->move($fotosDir, $filename);
+            $data['foto'] = $filename;
+        } else {
+            unset($data['foto']);
+        }
+
+        $servicios = $data['servicios'] ?? null;
+        unset($data['servicios']);
+
         $psicologo->update($data);
-        return response()->json($this->format($psicologo));
+
+        if ($servicios !== null) {
+            $psicologo->servicios()->sync($servicios);
+        }
+
+        return response()->json($this->format($psicologo->load('servicios')));
     }
 
     public function destroy(Psicologo $psicologo)

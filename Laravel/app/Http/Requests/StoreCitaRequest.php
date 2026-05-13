@@ -15,11 +15,12 @@ class StoreCitaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'fecha'         => 'required|date|after:today',
+            'fecha'         => 'required|date|after_or_equal:today',
             'hora'          => 'required|date_format:H:i',
             'observaciones' => 'nullable|string|max:500',
             'id_servicio'   => 'required|exists:servicios,id_servicio',
             'id_modalidad'  => 'required|exists:modalidades,id_modalidad',
+            'id_usuario'    => 'nullable|exists:users,id',
         ];
     }
 
@@ -27,7 +28,7 @@ class StoreCitaRequest extends FormRequest
     {
         return [
             'fecha.required'        => 'La fecha es obligatoria.',
-            'fecha.after'           => 'La fecha debe ser posterior a hoy.',
+            'fecha.after_or_equal'  => 'La fecha debe ser hoy o posterior.',
             'hora.required'         => 'La hora es obligatoria.',
             'hora.date_format'      => 'La hora debe tener formato HH:MM.',
             'id_servicio.required'  => 'Debe seleccionar un servicio.',

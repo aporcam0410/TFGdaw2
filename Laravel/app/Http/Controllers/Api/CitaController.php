@@ -23,6 +23,18 @@ class CitaController extends Controller
     {
         $usuario = Auth::user();
 
+        $idFinalizada = EstadoCita::finalizada()->id_estado;
+
+        Cita::where('id_estado', '!=', $idFinalizada)
+            ->where(function ($q) {
+                $q->where('fecha', '<', now()->toDateString())
+                  ->orWhere(function ($q2) {
+                      $q2->where('fecha', now()->toDateString())
+                         ->where('hora', '<', now()->toTimeString());
+                  });
+            })
+            ->update(['id_estado' => $idFinalizada]);
+
         $citas = $usuario->isAdmin()
             ? Cita::with(['usuario', 'psicologo', 'servicio', 'modalidad', 'estado'])->get()
             : Cita::where('id_usuario', $usuario->id)->with(['psicologo', 'servicio', 'modalidad', 'estado'])->get();
@@ -36,8 +48,12 @@ class CitaController extends Controller
         $usuario   = $request->user();
         $validated = $request->validated();
 
-        // Paciente autenticado
-        $validated['id_usuario'] = $usuario->id;
+        // Admin puede crear cita para otro usuario; si no, usa el autenticado
+        if ($usuario->isAdmin() && !empty($validated['id_usuario'])) {
+            // ya viene en $validated
+        } else {
+            $validated['id_usuario'] = $usuario->id;
+        }
 
         // Auto-asignar psicólogo desde el servicio
         $servicio   = Servicio::with('psicologos')->findOrFail($validated['id_servicio']);
@@ -50,8 +66,8 @@ class CitaController extends Controller
         // Auto-asignar precio final desde el servicio
         $validated['precio_final'] = $servicio->precio;
 
-        // Estado: Aprobado
-        $validated['id_estado'] = EstadoCita::aprobado()->id_estado;
+        // Estado: Confirmada
+        $validated['id_estado'] = EstadoCita::confirmada()->id_estado;
 
         try {
             $cita = Cita::create($validated);

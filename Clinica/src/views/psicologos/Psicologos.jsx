@@ -31,11 +31,13 @@ export default function Psicologos() {
             <div className="grid-3">
               {psicologos.map(p => (
                 <div key={p.id_psicologo} className={`card ${styles.card}`}>
-                  <div className={styles.photo} />
+                  {p.foto
+                    ? <img src={`/fotos/${p.foto}`} alt={p.nombre} className={styles.photo} />
+                    : <div className={styles.photo} />}
                   <div className={styles.info}>
                     <h3>{p.nombre}</h3>
-                    <span className="badge badge-accent">{p.especialidad}</span>
-                    <p>{p.descripcion ?? 'Profesional dedicado al bienestar emocional de sus pacientes.'}</p>
+                    {p.especialidad && <span className="badge badge-accent">{p.especialidad}</span>}
+                    <p>{p.descripcion || 'Profesional dedicado al bienestar emocional de sus pacientes.'}</p>
                     {p.servicios?.length > 0 && (
                       <div className={styles.servicios}>
                         {p.servicios.map(s => (
