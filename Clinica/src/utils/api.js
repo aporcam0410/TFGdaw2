@@ -64,6 +64,8 @@ const toPsicologoFD = (data, method = null) => {
       (v ?? []).forEach(id => fd.append('servicios[]', id))
     } else if (k === 'fotoFile') {
       if (v) fd.append('foto', v)
+    } else if (k === 'servicios' || k === 'foto' || k === 'id_psicologo') {
+      // servicios objetos se mandan via servicios_ids; foto ruta y id no se mandan
     } else if (v !== null && v !== undefined) {
       fd.append(k, v)
     }
