@@ -50,7 +50,7 @@ class PsicologoController extends Controller
             if (!is_dir($fotosDir)) mkdir($fotosDir, 0755, true);
             $filename = time() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
             $file->move($fotosDir, $filename);
-            $data['foto'] = $filename;
+            $data['foto'] = '/fotos/' . $filename;
         } else {
             unset($data['foto']);
         }
@@ -88,15 +88,16 @@ class PsicologoController extends Controller
             if ($file->getSize() > 2 * 1024 * 1024) {
                 return response()->json(['message' => 'La imagen no puede superar 2 MB.'], 422);
             }
-            if ($psicologo->foto && file_exists(public_path('fotos/' . $psicologo->foto))) {
-                unlink(public_path('fotos/' . $psicologo->foto));
+            if ($psicologo->foto) {
+                $oldFile = public_path(ltrim($psicologo->foto, '/'));
+                if (file_exists($oldFile)) unlink($oldFile);
             }
             $fotosDir = public_path('fotos');
             if (!is_dir($fotosDir)) mkdir($fotosDir, 0755, true);
             $file = $request->file('foto');
             $filename = time() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
             $file->move($fotosDir, $filename);
-            $data['foto'] = $filename;
+            $data['foto'] = '/fotos/' . $filename;
         } else {
             unset($data['foto']);
         }
@@ -128,7 +129,7 @@ class PsicologoController extends Controller
             'email'        => $p->email,
             'telefono'     => $p->telefono,
             'descripcion'  => $p->descripcion ?? null,
-            'foto'         => $p->foto ? '/fotos/' . $p->foto : null,
+            'foto'         => $p->foto ?? null,
             'servicios'    => $p->relationLoaded('servicios')
                 ? $p->servicios->map(fn($s) => [
                     'id_servicio'     => $s->id_servicio,
