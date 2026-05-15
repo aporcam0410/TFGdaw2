@@ -56,30 +56,35 @@ export const serviciosApi = {
 }
 
 // Psicólogos
-const toPsicologoFD = (data, method = null) => {
-  const fd = new FormData()
-  if (method) fd.append('_method', method)
+const fileToBase64 = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader()
+  reader.onload  = () => resolve(reader.result)
+  reader.onerror = reject
+  reader.readAsDataURL(file)
+})
+
+const toPsicologoPayload = async (data, method = null) => {
+  const payload = {}
+  if (method) payload._method = method
   for (const [k, v] of Object.entries(data)) {
     if (k === 'servicios_ids') {
-      (v ?? []).forEach(id => fd.append('servicios[]', id))
+      payload.servicios = v ?? []
     } else if (k === 'fotoFile') {
-      if (v) fd.append('foto', v)
+      if (v) payload.foto_base64 = await fileToBase64(v)
     } else if (k === 'servicios' || k === 'foto' || k === 'id_psicologo') {
-      // servicios objetos se mandan via servicios_ids; foto ruta y id no se mandan
+      // skip
     } else if (v !== null && v !== undefined) {
-      fd.append(k, v)
+      payload[k] = v
     }
   }
-  return fd
+  return payload
 }
-
-const multipart = { headers: { 'Content-Type': undefined } }
 
 export const psicologosApi = {
   getAll:  ()         => api.get(PSICOLOGOS_INDEX_ENDPOINT),
   getOne:  (id)       => api.get(PSICOLOGOS_SHOW_ENDPOINT(id)),
-  create:  (data)     => api.post(PSICOLOGOS_STORE_ENDPOINT, toPsicologoFD(data), multipart),
-  update:  (id, data) => api.post(PSICOLOGOS_UPDATE_ENDPOINT(id), toPsicologoFD(data, 'PUT'), multipart),
+  create:  async (data) => api.post(PSICOLOGOS_STORE_ENDPOINT, await toPsicologoPayload(data)),
+  update:  async (id, data) => api.post(PSICOLOGOS_UPDATE_ENDPOINT(id), await toPsicologoPayload(data, 'PUT')),
   delete:  (id)       => api.delete(PSICOLOGOS_DELETE_ENDPOINT(id)),
 }
 

@@ -37,23 +37,12 @@ class PsicologoController extends Controller
         $servicios = $data['servicios'] ?? null;
         unset($data['servicios']);
 
-        if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            $ext = strtolower($file->getClientOriginalExtension());
-            if (!in_array($ext, ['png', 'webp'])) {
-                return response()->json(['message' => 'Solo se permiten imágenes en formato PNG o WebP.'], 422);
-            }
-            if ($file->getSize() > 2 * 1024 * 1024) {
-                return response()->json(['message' => 'La imagen no puede superar 2 MB.'], 422);
-            }
-            $fotosDir = public_path('fotos');
-            if (!is_dir($fotosDir)) mkdir($fotosDir, 0755, true);
-            $filename = time() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
-            $file->move($fotosDir, $filename);
-            $data['foto'] = '/fotos/' . $filename;
-        } else {
-            unset($data['foto']);
+        if ($request->filled('foto_base64')) {
+            $saved = $this->saveFotoBase64($request->input('foto_base64'));
+            if (!$saved) return response()->json(['message' => 'Solo se permiten imágenes en formato PNG o WebP y menos de 2 MB.'], 422);
+            $data['foto'] = $saved;
         }
+        unset($data['foto_base64']);
 
         $psicologo = Psicologo::create($data);
 
@@ -79,28 +68,16 @@ class PsicologoController extends Controller
             'servicios.min'      => 'Debes asignar al menos un servicio.',
         ]);
 
-        if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            $ext = strtolower($file->getClientOriginalExtension());
-            if (!in_array($ext, ['png', 'webp'])) {
-                return response()->json(['message' => 'Solo se permiten imágenes en formato PNG o WebP.'], 422);
-            }
-            if ($file->getSize() > 2 * 1024 * 1024) {
-                return response()->json(['message' => 'La imagen no puede superar 2 MB.'], 422);
-            }
+        if ($request->filled('foto_base64')) {
             if ($psicologo->foto) {
                 $oldFile = public_path(ltrim($psicologo->foto, '/'));
                 if (file_exists($oldFile)) unlink($oldFile);
             }
-            $fotosDir = public_path('fotos');
-            if (!is_dir($fotosDir)) mkdir($fotosDir, 0755, true);
-            $file = $request->file('foto');
-            $filename = time() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
-            $file->move($fotosDir, $filename);
-            $data['foto'] = '/fotos/' . $filename;
-        } else {
-            unset($data['foto']);
+            $saved = $this->saveFotoBase64($request->input('foto_base64'));
+            if (!$saved) return response()->json(['message' => 'Solo se permiten imágenes en formato PNG o WebP y menos de 2 MB.'], 422);
+            $data['foto'] = $saved;
         }
+        unset($data['foto_base64']);
 
         $servicios = $data['servicios'] ?? null;
         unset($data['servicios']);
@@ -118,6 +95,19 @@ class PsicologoController extends Controller
     {
         $psicologo->delete();
         return response()->json(['message' => 'Psicólogo eliminado.']);
+    }
+
+    private function saveFotoBase64(string $base64): ?string
+    {
+        if (!preg_match('/^data:image\/(png|webp);base64,/', $base64, $m)) return null;
+        $ext  = $m[1];
+        $data = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $base64));
+        if (!$data || strlen($data) > 2 * 1024 * 1024) return null;
+        $fotosDir = public_path('fotos');
+        if (!is_dir($fotosDir)) mkdir($fotosDir, 0755, true);
+        $filename = time() . '_' . uniqid() . '.' . $ext;
+        file_put_contents($fotosDir . '/' . $filename, $data);
+        return '/fotos/' . $filename;
     }
 
     private function format(Psicologo $p): array
