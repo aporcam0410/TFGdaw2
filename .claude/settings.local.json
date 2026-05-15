@@ -13,7 +13,10 @@
       "Bash(docker compose *)",
       "Bash(npm run *)",
       "PowerShell(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }; Write-Host \"Killed port 3000\")",
-      "Bash(docker exec *)"
+      "Bash(docker exec *)",
+      "PowerShell(Get-Service \"com.docker.service\" -ErrorAction SilentlyContinue)",
+      "PowerShell(wsl --status 2>&1)",
+      "PowerShell(head -5)"
     ]
   }
 }

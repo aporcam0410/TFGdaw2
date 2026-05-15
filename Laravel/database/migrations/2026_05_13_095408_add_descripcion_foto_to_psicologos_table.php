@@ -12,10 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('psicologos', function (Blueprint $table) {
+            if (!Schema::hasColumn('psicologos', 'descripcion')) {
+                $table->string('descripcion')->nullable();
+         }
             if (!Schema::hasColumn('psicologos', 'foto')) {
                 $table->string('foto')->nullable()->after('descripcion');
-            }
-        });
+        }
+     });
     }
 
     public function down(): void

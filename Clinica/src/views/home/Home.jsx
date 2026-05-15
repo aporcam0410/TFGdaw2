@@ -23,7 +23,7 @@ export default function Home() {
       setEspecialidades(lista.map((s, i) => ({
         icon:   SERVICIO_ICONS[i % SERVICIO_ICONS.length],
         titulo: s.nombre_servicio,
-        desc:   s.descripcion ?? 'Tratamiento personalizado para tu bienestar emocional.',
+        desc:   s.descripcion ?? '',
       })))
     }).catch(() => {})
   }, [])
@@ -108,7 +108,7 @@ export default function Home() {
                   <div className={styles.psicInfo}>
                     <h3>{p.nombre}</h3>
                     {p.especialidad && <span className="badge badge-accent">{p.especialidad}</span>}
-                    <p>{p.descripcion || 'Profesional dedicado al bienestar emocional de sus pacientes.'}</p>
+                    {p.descripcion && <p>{p.descripcion}</p>}
                   </div>
                 </div>
               ))}

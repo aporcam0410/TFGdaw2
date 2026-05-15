@@ -12,8 +12,10 @@ use App\Http\Controllers\Api\ContactoController;
 use App\Models\EstadoCita;
 
 // Públicas
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login',    [AuthController::class, 'login']);
+Route::post('/register',        [AuthController::class, 'register']);
+Route::post('/login',           [AuthController::class, 'login']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password',  [AuthController::class, 'resetPassword']);
 Route::get('/servicios',             [ServicioController::class,  'index']);
 Route::get('/servicios/{servicio}',  [ServicioController::class,  'show']);
 Route::get('/psicologos',            [PsicologoController::class, 'index']);
@@ -34,7 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Solo admin
     Route::middleware('can:admin')->group(function () {
-        Route::apiResource('usuarios',   UsuarioController::class)->except(['store']);
+        Route::apiResource('usuarios',   UsuarioController::class);
         Route::apiResource('psicologos', PsicologoController::class)->except(['index', 'show']);
         Route::apiResource('servicios',  ServicioController::class)->except(['index', 'show']);
     });

@@ -27,18 +27,27 @@ class PsicologoController extends Controller
             'email'       => 'required|email|unique:psicologos,email',
             'telefono'    => 'nullable|string|max:20',
             'descripcion' => 'nullable|string',
-            'foto'        => 'nullable|image|max:2048',
-            'servicios'   => 'nullable|array',
+            'servicios'   => 'required|array|min:1',
             'servicios.*' => 'exists:servicios,id_servicio',
+        ], [
+            'servicios.required' => 'Debes asignar al menos un servicio.',
+            'servicios.min'      => 'Debes asignar al menos un servicio.',
         ]);
 
         $servicios = $data['servicios'] ?? null;
         unset($data['servicios']);
 
         if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $ext = strtolower($file->getClientOriginalExtension());
+            if (!in_array($ext, ['png', 'webp'])) {
+                return response()->json(['message' => 'Solo se permiten imágenes en formato PNG o WebP.'], 422);
+            }
+            if ($file->getSize() > 2 * 1024 * 1024) {
+                return response()->json(['message' => 'La imagen no puede superar 2 MB.'], 422);
+            }
             $fotosDir = public_path('fotos');
             if (!is_dir($fotosDir)) mkdir($fotosDir, 0755, true);
-            $file = $request->file('foto');
             $filename = time() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
             $file->move($fotosDir, $filename);
             $data['foto'] = $filename;
@@ -63,12 +72,22 @@ class PsicologoController extends Controller
             'email'       => 'sometimes|email|unique:psicologos,email,' . $psicologo->id_psicologo . ',id_psicologo',
             'telefono'    => 'nullable|string|max:20',
             'descripcion' => 'nullable|string',
-            'foto'        => 'nullable|image|max:2048',
-            'servicios'   => 'nullable|array',
+            'servicios'   => 'required|array|min:1',
             'servicios.*' => 'exists:servicios,id_servicio',
+        ], [
+            'servicios.required' => 'Debes asignar al menos un servicio.',
+            'servicios.min'      => 'Debes asignar al menos un servicio.',
         ]);
 
         if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $ext = strtolower($file->getClientOriginalExtension());
+            if (!in_array($ext, ['png', 'webp'])) {
+                return response()->json(['message' => 'Solo se permiten imágenes en formato PNG o WebP.'], 422);
+            }
+            if ($file->getSize() > 2 * 1024 * 1024) {
+                return response()->json(['message' => 'La imagen no puede superar 2 MB.'], 422);
+            }
             if ($psicologo->foto && file_exists(public_path('fotos/' . $psicologo->foto))) {
                 unlink(public_path('fotos/' . $psicologo->foto));
             }

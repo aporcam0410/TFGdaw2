@@ -50,4 +50,13 @@ class Usuario extends Authenticatable
     {
         return $this->rol && $this->rol->slug === RoleSlug::ADMIN->value;
     }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $url = env('FRONTEND_URL', 'http://localhost:3000')
+            . '/reset-password?token=' . $token
+            . '&email=' . urlencode($this->email);
+
+        $this->notify(new \App\Notifications\ResetPasswordNotification($url));
+    }
 }

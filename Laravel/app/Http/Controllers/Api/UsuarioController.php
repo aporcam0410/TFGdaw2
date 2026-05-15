@@ -15,6 +15,23 @@ class UsuarioController extends Controller
         return response()->json($usuarios);
     }
 
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name'             => 'required|string|max:100',
+            'apellidos'        => 'nullable|string|max:100',
+            'email'            => 'required|email|unique:users,email',
+            'telefono'         => 'nullable|string|max:20',
+            'fecha_nacimiento' => 'nullable|date',
+            'id_rol'           => 'required|exists:roles,id_rol',
+            'password'         => 'required|string|min:6',
+        ]);
+
+        $data['password'] = Hash::make($data['password']);
+        $usuario = Usuario::create($data);
+        return response()->json($this->format($usuario->load('rol')), 201);
+    }
+
     public function show(Usuario $usuario)
     {
         return response()->json($this->format($usuario->load('rol')));

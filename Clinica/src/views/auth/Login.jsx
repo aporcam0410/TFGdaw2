@@ -1,14 +1,16 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import styles from './auth.module.css'
 
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const resetOk = searchParams.get('reset') === 'ok'
 
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
 
@@ -43,12 +45,13 @@ export default function Login() {
             <div className="form-group">
               <div className={styles.passLabel}>
                 <label className="form-label">Contraseña</label>
-                <span className={styles.forgot}>¿Olvidaste tu contraseña?</span>
+                <Link to="/forgot-password" className={styles.forgot}>¿Olvidaste tu contraseña?</Link>
               </div>
               <input type="password" name="password" value={form.password} onChange={handleChange}
                 placeholder="••••••••" required />
             </div>
 
+            {resetOk && <p style={{color:'var(--color-accent-dark)',background:'#e0f5f7',borderRadius:'6px',padding:'10px 14px',fontSize:'0.9rem'}}>Contraseña restablecida. Ya puedes iniciar sesión.</p>}
             {error && <p className="form-error">{error}</p>}
 
             <button type="submit" className={`btn btn-primary ${styles.submitBtn}`} disabled={loading}>

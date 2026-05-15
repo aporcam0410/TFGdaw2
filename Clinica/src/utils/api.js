@@ -1,7 +1,15 @@
 import axios from 'axios'
+import {
+  LOGIN_ENDPOINT, REGISTER_ENDPOINT, LOGOUT_ENDPOINT, ME_ENDPOINT,
+  USUARIOS_INDEX_ENDPOINT, USUARIOS_SHOW_ENDPOINT, USUARIOS_STORE_ENDPOINT, USUARIOS_UPDATE_ENDPOINT, USUARIOS_DELETE_ENDPOINT,
+  PSICOLOGOS_INDEX_ENDPOINT, PSICOLOGOS_SHOW_ENDPOINT, PSICOLOGOS_STORE_ENDPOINT, PSICOLOGOS_UPDATE_ENDPOINT, PSICOLOGOS_DELETE_ENDPOINT,
+  SERVICIOS_INDEX_ENDPOINT, SERVICIOS_SHOW_ENDPOINT, SERVICIOS_STORE_ENDPOINT, SERVICIOS_UPDATE_ENDPOINT, SERVICIOS_DELETE_ENDPOINT,
+  CITAS_INDEX_ENDPOINT, CITAS_SHOW_ENDPOINT, CITAS_STORE_ENDPOINT, CITAS_UPDATE_ENDPOINT, CITAS_DELETE_ENDPOINT,
+  MODALIDADES_ENDPOINT, ESTADOS_CITA_ENDPOINT, DISPONIBILIDAD_ENDPOINT, CONTACTO_ENDPOINT,
+} from './endpoints'
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: '/',
   headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
 })
 
@@ -29,24 +37,25 @@ api.interceptors.response.use(
 
 export default api
 
-const crudApi = (base) => ({
-  getAll:  ()         => api.get(`/${base}`),
-  getOne:  (id)       => api.get(`/${base}/${id}`),
-  create:  (d)        => api.post(`/${base}`, d),
-  update:  (id, d)    => api.put(`/${base}/${id}`, d),
-  delete:  (id)       => api.delete(`/${base}/${id}`),
-})
-
+// Auth
 export const authApi = {
-  login:    (data) => api.post('/login', data),
-  register: (data) => api.post('/register', data),
-  logout:   ()     => api.post('/logout'),
-  me:       ()     => api.get('/me'),
-  updateMe: (data) => api.put('/me', data),
+  login:    (data) => api.post(LOGIN_ENDPOINT, data),
+  register: (data) => api.post(REGISTER_ENDPOINT, data),
+  logout:   ()     => api.post(LOGOUT_ENDPOINT),
+  me:       ()     => api.get(ME_ENDPOINT),
+  updateMe: (data) => api.put(ME_ENDPOINT, data),
 }
 
-export const serviciosApi = crudApi('servicios')
+// Servicios
+export const serviciosApi = {
+  getAll:  ()         => api.get(SERVICIOS_INDEX_ENDPOINT),
+  getOne:  (id)       => api.get(SERVICIOS_SHOW_ENDPOINT(id)),
+  create:  (data)     => api.post(SERVICIOS_STORE_ENDPOINT, data),
+  update:  (id, data) => api.put(SERVICIOS_UPDATE_ENDPOINT(id), data),
+  delete:  (id)       => api.delete(SERVICIOS_DELETE_ENDPOINT(id)),
+}
 
+// Psicólogos
 const toPsicologoFD = (data, method = null) => {
   const fd = new FormData()
   if (method) fd.append('_method', method)
@@ -63,15 +72,33 @@ const toPsicologoFD = (data, method = null) => {
 }
 
 export const psicologosApi = {
-  getAll:    ()         => api.get('/psicologos'),
-  getOne:    (id)       => api.get(`/psicologos/${id}`),
-  delete:    (id)       => api.delete(`/psicologos/${id}`),
-  create:    (data)     => api.post('/psicologos', toPsicologoFD(data)),
-  update:    (id, data) => api.post(`/psicologos/${id}`, toPsicologoFD(data, 'PUT')),
+  getAll:  ()         => api.get(PSICOLOGOS_INDEX_ENDPOINT),
+  getOne:  (id)       => api.get(PSICOLOGOS_SHOW_ENDPOINT(id)),
+  create:  (data)     => api.post(PSICOLOGOS_STORE_ENDPOINT, toPsicologoFD(data)),
+  update:  (id, data) => api.post(PSICOLOGOS_UPDATE_ENDPOINT(id), toPsicologoFD(data, 'PUT')),
+  delete:  (id)       => api.delete(PSICOLOGOS_DELETE_ENDPOINT(id)),
 }
-export const citasApi       = crudApi('citas')
-export const usuariosApi    = crudApi('usuarios')
-export const modalidadesApi     = { getAll: () => api.get('/modalidades') }
-export const estadosCitaApi     = { getAll: () => api.get('/estados-cita') }
-export const disponibilidadApi  = { getSlots: (fecha, id_servicio) => api.get('/disponibilidad', { params: { fecha, id_servicio } }) }
-export const contactoApi        = { send: (data) => api.post('/contacto', data) }
+
+// Usuarios
+export const usuariosApi = {
+  getAll:  ()         => api.get(USUARIOS_INDEX_ENDPOINT),
+  getOne:  (id)       => api.get(USUARIOS_SHOW_ENDPOINT(id)),
+  create:  (data)     => api.post(USUARIOS_STORE_ENDPOINT, data),
+  update:  (id, data) => api.put(USUARIOS_UPDATE_ENDPOINT(id), data),
+  delete:  (id)       => api.delete(USUARIOS_DELETE_ENDPOINT(id)),
+}
+
+// Citas
+export const citasApi = {
+  getAll:  ()         => api.get(CITAS_INDEX_ENDPOINT),
+  getOne:  (id)       => api.get(CITAS_SHOW_ENDPOINT(id)),
+  create:  (data)     => api.post(CITAS_STORE_ENDPOINT, data),
+  update:  (id, data) => api.put(CITAS_UPDATE_ENDPOINT(id), data),
+  delete:  (id)       => api.delete(CITAS_DELETE_ENDPOINT(id)),
+}
+
+// Otros
+export const modalidadesApi    = { getAll: () => api.get(MODALIDADES_ENDPOINT) }
+export const estadosCitaApi    = { getAll: () => api.get(ESTADOS_CITA_ENDPOINT) }
+export const disponibilidadApi = { getSlots: (fecha, id_servicio) => api.get(DISPONIBILIDAD_ENDPOINT, { params: { fecha, id_servicio } }) }
+export const contactoApi       = { send: (data) => api.post(CONTACTO_ENDPOINT, data) }

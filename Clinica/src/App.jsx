@@ -4,6 +4,8 @@ import ProtectedRoute from './views/ProtectedRoute'
 import Home from './views/home/Home'
 import Login from './views/auth/Login'
 import Register from './views/auth/Register'
+import ForgotPassword from './views/auth/ForgotPassword'
+import ResetPassword from './views/auth/ResetPassword'
 import Psicologos from './views/psicologos/Psicologos'
 import Nosotros from './views/nosotros/Nosotros'
 import Contacto from './views/contacto/Contacto'
@@ -36,6 +38,8 @@ export default function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

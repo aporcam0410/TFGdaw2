@@ -8,7 +8,7 @@ const TABS = ['Usuarios', 'Psicólogos', 'Servicios', 'Citas']
 
 const INITIAL_PSICOLOGO = { nombre: '', especialidad: '', email: '', telefono: '', descripcion: '', servicios_ids: [] }
 const INITIAL_SERVICIO  = { nombre_servicio: '', descripcion: '', precio: '', duracion_min: '' }
-const INITIAL_USUARIO   = { nombre: '', apellidos: '', email: '', telefono: '', is_admin: 0 }
+const INITIAL_USUARIO   = { nombre: '', apellidos: '', email: '', telefono: '', fecha_nacimiento: '', id_rol: 2 }
 
 export default function Admin() {
   const [tab, setTab] = useState('Usuarios')
@@ -50,7 +50,7 @@ export default function Admin() {
       setEditCita(item)
       return
     }
-    let f = { ...item }
+    let f = { ...item, password: '' }
     if (tab === 'Psicólogos') {
       f.servicios_ids = (item.servicios ?? []).map(s => s.id_servicio)
     }
@@ -73,7 +73,8 @@ export default function Admin() {
       const id = form.id ?? form.id_psicologo ?? form.id_servicio
       let payload = form
       if (tab === 'Usuarios') {
-        payload = { name: form.nombre, apellidos: form.apellidos, email: form.email, telefono: form.telefono, id_rol: Number(form.id_rol) }
+        payload = { name: form.nombre, apellidos: form.apellidos, email: form.email, telefono: form.telefono || null, fecha_nacimiento: form.fecha_nacimiento || null, id_rol: Number(form.id_rol) }
+        if (form.password) payload.password = form.password
       } else if (tab === 'Psicólogos') {
         payload = { ...form }
         if (fotoFile) payload.fotoFile = fotoFile
@@ -83,7 +84,12 @@ export default function Admin() {
       setModal(null)
       load()
     } catch (err) {
-      setFormError(err.response?.data?.message || 'Error al guardar.')
+      const errors = err.response?.data?.errors
+      if (errors) {
+        setFormError(Object.values(errors).flat().join(' '))
+      } else {
+        setFormError(err.response?.data?.message || 'Error al guardar.')
+      }
     } finally {
       setSaving(false)
     }
@@ -101,7 +107,7 @@ export default function Admin() {
         <table className={styles.table}>
           <thead>
             <tr>
-              {tab === 'Usuarios'   && <><th>Nombre</th><th>Email</th><th>Teléfono</th><th>Fecha registro</th><th>Rol</th><th>Acciones</th></>}
+              {tab === 'Usuarios'   && <><th>Nombre</th><th>Email</th><th>Teléfono</th><th>F. nacimiento</th><th>Fecha registro</th><th>Rol</th><th>Acciones</th></>}
               {tab === 'Psicólogos' && <><th>Nombre del profesional</th><th>Especialidad</th><th>Servicios</th><th>Email</th><th>Acciones</th></>}
               {tab === 'Servicios'  && <><th>Servicio</th><th>Descripción</th><th>Duración</th><th>Precio</th><th>Acciones</th></>}
               {tab === 'Citas'      && <><th>Paciente</th><th>Psicólogo</th><th>Servicio</th><th>Fecha y hora</th><th>Modalidad</th><th>Estado</th><th>Precio</th><th>Acciones</th></>}
@@ -114,6 +120,7 @@ export default function Admin() {
                   <td data-label="Nombre"><div className={styles.nameCell}>{item.nombre} {item.apellidos}<span>{item.email}</span></div></td>
                   <td data-label="Email">{item.email}</td>
                   <td data-label="Teléfono">{item.telefono ?? '—'}</td>
+                  <td data-label="F. nacimiento">{item.fecha_nacimiento ?? '—'}</td>
                   <td data-label="Registro">{item.fecha_registro ?? '—'}</td>
                   <td data-label="Rol"><span className={`badge ${item.is_admin ? 'badge-warning' : 'badge-accent'}`}>{item.is_admin ? 'Admin' : 'Paciente'}</span></td>
                 </>)}
@@ -156,7 +163,7 @@ export default function Admin() {
     )
   }
 
-  const canCreate = tab === 'Psicólogos' || tab === 'Servicios' || tab === 'Citas'
+  const canCreate = tab !== 'Citas' || tab === 'Citas'
 
   return (
     <div className={styles.layout}>
@@ -182,7 +189,7 @@ export default function Admin() {
           <h1>Gestión de {tab}</h1>
           {canCreate && (
             <button className="btn btn-primary" onClick={tab === 'Citas' ? () => setCreateCita(true) : openCreate}>
-              + Añadir {tab === 'Psicólogos' ? 'Psicólogo' : tab === 'Citas' ? 'Cita' : 'Servicio'}
+              + Añadir {tab === 'Psicólogos' ? 'Psicólogo' : tab === 'Usuarios' ? 'Usuario' : tab === 'Citas' ? 'Cita' : 'Servicio'}
             </button>
           )}
         </div>
@@ -203,7 +210,7 @@ export default function Admin() {
                   </div>
                   <div className="form-group">
                     <label className="form-label">Apellidos</label>
-                    <input name="apellidos" value={form.apellidos ?? ''} onChange={handleChange} />
+                    <input name="apellidos" value={form.apellidos ?? ''} onChange={handleChange} required />
                   </div>
                 </div>
                 <div className={styles.row2}>
@@ -216,12 +223,24 @@ export default function Admin() {
                     <input name="telefono" value={form.telefono ?? ''} onChange={handleChange} />
                   </div>
                 </div>
+                <div className={styles.row2}>
+                  <div className="form-group">
+                    <label className="form-label">Fecha de nacimiento</label>
+                    <input type="date" name="fecha_nacimiento" value={form.fecha_nacimiento ?? ''} onChange={handleChange} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Rol</label>
+                    <select name="id_rol" value={form.id_rol ?? 2} onChange={handleChange}>
+                      <option value={2}>Paciente</option>
+                      <option value={1}>Administrador</option>
+                    </select>
+                  </div>
+                </div>
                 <div className="form-group">
-                  <label className="form-label">Rol</label>
-                  <select name="id_rol" value={form.id_rol ?? 2} onChange={handleChange}>
-                    <option value={2}>Paciente</option>
-                    <option value={1}>Administrador</option>
-                  </select>
+                  <label className="form-label">{modal === 'create' ? 'Contraseña' : 'Nueva contraseña (opcional)'}</label>
+                  <input type="password" name="password" value={form.password ?? ''} onChange={handleChange}
+                    {...(modal === 'create' ? { required: true } : {})}
+                    minLength={6} placeholder="Mínimo 6 caracteres" />
                 </div>
               </>)}
 
@@ -277,7 +296,7 @@ export default function Admin() {
                       className={styles.fotoPreview}
                     />
                   )}
-                  <input type="file" accept="image/*" onChange={e => setFotoFile(e.target.files[0] ?? null)} />
+                  <input type="file" accept=".png,.webp,image/png,image/webp" onChange={e => setFotoFile(e.target.files[0] ?? null)} />
                 </div>
               </>)}
 

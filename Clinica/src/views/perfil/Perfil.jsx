@@ -45,7 +45,7 @@ export default function Perfil() {
     e.preventDefault()
     setError(''); setSuccess(''); setLoading(true)
     try {
-      const res = await usuariosApi.update(usuario.id, form)
+      const res = await authApi.updateMe(form)
       updateUsuario(res.data)
       setSuccess('Perfil actualizado correctamente.')
       setEditando(false)
@@ -61,7 +61,7 @@ export default function Perfil() {
     if (passForm.password.length < 6) { setPassError('Mínimo 6 caracteres.'); return }
     setPassError(''); setPassSaving(true)
     try {
-      await usuariosApi.update(usuario.id, { password: passForm.password })
+      await authApi.updateMe({ password: passForm.password })
       setCambiarPass(false)
       setPassForm({ password: '', password_confirm: '' })
     } catch {

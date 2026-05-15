@@ -197,7 +197,6 @@ export default function EditCitaModal({ cita, onClose, onSaved }) {
               <div className="form-group">
                 <label className="form-label">Estado</label>
                 <select value={idEstado} onChange={e => setIdEstado(e.target.value)}>
-                  <option value="">Sin cambio</option>
                   {estados.map(e => (
                     <option key={e.id_estado} value={e.id_estado}>{e.nombre_estado}</option>
                   ))}
