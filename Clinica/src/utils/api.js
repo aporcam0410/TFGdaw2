@@ -73,11 +73,13 @@ const toPsicologoFD = (data, method = null) => {
   return fd
 }
 
+const multipart = { headers: { 'Content-Type': undefined } }
+
 export const psicologosApi = {
   getAll:  ()         => api.get(PSICOLOGOS_INDEX_ENDPOINT),
   getOne:  (id)       => api.get(PSICOLOGOS_SHOW_ENDPOINT(id)),
-  create:  (data)     => api.post(PSICOLOGOS_STORE_ENDPOINT, toPsicologoFD(data)),
-  update:  (id, data) => api.post(PSICOLOGOS_UPDATE_ENDPOINT(id), toPsicologoFD(data, 'PUT')),
+  create:  (data)     => api.post(PSICOLOGOS_STORE_ENDPOINT, toPsicologoFD(data), multipart),
+  update:  (id, data) => api.post(PSICOLOGOS_UPDATE_ENDPOINT(id), toPsicologoFD(data, 'PUT'), multipart),
   delete:  (id)       => api.delete(PSICOLOGOS_DELETE_ENDPOINT(id)),
 }
 
