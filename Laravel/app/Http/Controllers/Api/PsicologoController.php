@@ -128,7 +128,7 @@ class PsicologoController extends Controller
             'email'        => $p->email,
             'telefono'     => $p->telefono,
             'descripcion'  => $p->descripcion ?? null,
-            'foto'         => $p->foto ?? null,
+            'foto'         => $p->foto ? url('fotos/' . $p->foto) : null,
             'servicios'    => $p->relationLoaded('servicios')
                 ? $p->servicios->map(fn($s) => [
                     'id_servicio'     => $s->id_servicio,
