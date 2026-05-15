@@ -32,7 +32,7 @@ export default function Psicologos() {
               {psicologos.map(p => (
                 <div key={p.id_psicologo} className={`card ${styles.card}`}>
                   {p.foto
-                    ? <img src={`/fotos/${p.foto}`} alt={p.nombre} className={styles.photo} />
+                    ? <img src={p.foto} alt={p.nombre} className={styles.photo} />
                     : <div className={styles.photo} />}
                   <div className={styles.info}>
                     <h3>{p.nombre}</h3>

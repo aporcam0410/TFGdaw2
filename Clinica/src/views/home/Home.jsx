@@ -103,7 +103,7 @@ export default function Home() {
               {psicologos.map(p => (
                 <div key={p.id_psicologo} className={`card ${styles.psicCard}`}>
                   {p.foto
-                    ? <img src={`/fotos/${p.foto}`} alt={p.nombre} className={styles.psicPhoto} />
+                    ? <img src={p.foto} alt={p.nombre} className={styles.psicPhoto} />
                     : <div className={styles.psicPhoto} />}
                   <div className={styles.psicInfo}>
                     <h3>{p.nombre}</h3>

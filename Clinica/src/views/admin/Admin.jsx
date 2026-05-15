@@ -291,7 +291,7 @@ export default function Admin() {
                   <label className="form-label">Foto</label>
                   {(fotoFile || form.foto) && (
                     <img
-                      src={fotoFile ? URL.createObjectURL(fotoFile) : `/fotos/${form.foto}`}
+                      src={fotoFile ? URL.createObjectURL(fotoFile) : form.foto}
                       alt=""
                       className={styles.fotoPreview}
                     />

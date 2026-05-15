@@ -118,7 +118,7 @@ export default function Nosotros() {
               {equipo.map(p => (
                 <div key={p.id_psicologo} className={`card ${styles.equipoCard}`}>
                   {p.foto
-                    ? <img src={`/fotos/${p.foto}`} alt={p.nombre} className={styles.equipoPhoto} />
+                    ? <img src={p.foto} alt={p.nombre} className={styles.equipoPhoto} />
                     : <div className={styles.equipoPhoto} />}
                   <div className={styles.equipoInfo}>
                     <h3>{p.nombre}</h3>
