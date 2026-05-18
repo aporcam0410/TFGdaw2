@@ -25,7 +25,7 @@ export default function Header() {
 
         {/* NAV DESKTOP + MOBILE DROPDOWN */}
         <nav className={`${styles.nav} ${menuOpen ? styles.open : ''}`}>
-          <NavLink to="/"           className={navClass} end       onClick={close}>Home</NavLink>
+          <NavLink to="/"           className={navClass} end       onClick={close}>Inicio</NavLink>
           <NavLink to="/citas"      className={navClass}           onClick={close}>Citas</NavLink>
           <NavLink to="/psicologos" className={navClass}           onClick={close}>Psicólogos</NavLink>
           <NavLink to="/nosotros"   className={navClass}           onClick={close}>Nosotros</NavLink>
