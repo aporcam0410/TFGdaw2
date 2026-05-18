@@ -7,6 +7,10 @@
     {
       "source": "/fotos/:path*",
       "destination": "http://13.50.147.106/fotos/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
