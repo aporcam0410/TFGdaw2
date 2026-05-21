@@ -272,19 +272,31 @@ export default function Admin() {
                 </div>
                 <div className="form-group">
                   <label className="form-label">Servicios asignados</label>
-                  <div style={{display:'flex', flexDirection:'column', gap:'8px', marginTop:'4px'}}>
-                    {todosServicios.map(s => (
-                      <label key={s.id_servicio} style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'0.875rem', cursor:'pointer'}}>
-                        <input type="checkbox"
-                          checked={(form.servicios_ids ?? []).includes(s.id_servicio)}
-                          onChange={e => {
-                            const ids = form.servicios_ids ?? []
-                            setForm(f => ({ ...f, servicios_ids: e.target.checked ? [...ids, s.id_servicio] : ids.filter(id => id !== s.id_servicio) }))
-                          }}
-                        />
-                        {s.nombre_servicio}
-                      </label>
-                    ))}
+                  <select
+                    value=""
+                    onChange={e => {
+                      const id = Number(e.target.value)
+                      if (id && !(form.servicios_ids ?? []).includes(id))
+                        setForm(f => ({ ...f, servicios_ids: [...(f.servicios_ids ?? []), id] }))
+                    }}
+                  >
+                    <option value="">Añadir servicio...</option>
+                    {todosServicios
+                      .filter(s => !(form.servicios_ids ?? []).includes(s.id_servicio))
+                      .map(s => (
+                        <option key={s.id_servicio} value={s.id_servicio}>{s.nombre_servicio}</option>
+                      ))}
+                  </select>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
+                    {(form.servicios_ids ?? []).map(id => {
+                      const s = todosServicios.find(sv => sv.id_servicio === id)
+                      return s ? (
+                        <span key={id} className="badge badge-primary" style={{ cursor: 'pointer' }}
+                          onClick={() => setForm(f => ({ ...f, servicios_ids: (f.servicios_ids ?? []).filter(i => i !== id) }))}>
+                          {s.nombre_servicio} ✕
+                        </span>
+                      ) : null
+                    })}
                   </div>
                 </div>
                 <div className="form-group">

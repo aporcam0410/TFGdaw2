@@ -44,7 +44,6 @@ export default function EditCitaModal({ cita, onClose, onSaved }) {
   const [idEstado,      setIdEstado]     = useState(String(cita.estado?.id_estado      ?? ''))
   const [psicAsignado,  setPsic]         = useState(cita.psicologo ?? null)
   const [observaciones, setObs]          = useState(cita.observaciones ?? '')
-  const [precioFinal,   setPrecio]       = useState(cita.precio_final ?? '')
 
   const [error,  setError]  = useState('')
   const [saving, setSaving] = useState(false)
@@ -118,6 +117,7 @@ export default function EditCitaModal({ cita, onClose, onSaved }) {
   }
 
   const servicioSel  = servicios.find(s => String(s.id_servicio)  === idServicio)
+  const precioFinal  = servicioSel?.precio ?? cita.precio_final ?? ''
   const modalidadSel = modalidades.find(m => String(m.id_modalidad) === idModalidad)
   const dias = buildCalendar(year, month)
 
@@ -246,8 +246,8 @@ export default function EditCitaModal({ cita, onClose, onSaved }) {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Precio final (€)</label>
-                <input type="number" value={precioFinal} onChange={e => setPrecio(e.target.value)} min="0" />
+                <label className="form-label">Precio (€)</label>
+                <input type="number" value={precioFinal} readOnly style={{ background: '#f5f5f5', cursor: 'not-allowed' }} />
               </div>
 
               <div className="form-group">
