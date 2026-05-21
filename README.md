@@ -83,7 +83,7 @@ Aplicación web para la gestión de citas de una clínica de psicología. Permit
 
 - [Diseño en Figma](https://www.figma.com/design/gj30SYNzh5wc5rFCnxZOe6/Proyecto-TFG-Psicologia?node-id=0-1&p=f&t=yxRlc2NeaNwKi69n-0)
 - [Vídeo demostrativo](#)
-- [Web desplegada](https://psicologiavelez.vercel.app)
+- [Web desplegada — psicologiavelez.vercel.app](https://psicologiavelez.vercel.app)
 
 ## Autor
 
