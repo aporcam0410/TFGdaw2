@@ -20,7 +20,7 @@ class AuthController extends Controller
             'apellidos'        => 'required|string|max:100',
             'email'            => 'required|email|unique:users,email',
             'password'         => 'required|string|min:6',
-            'telefono'         => 'nullable|string|max:20',
+            'telefono'         => 'nullable|regex:/^\d{9}$/',
             'fecha_nacimiento' => 'nullable|date',
         ]);
 
@@ -73,7 +73,7 @@ class AuthController extends Controller
         $data = $request->validate([
             'nombre'           => 'sometimes|string|max:100',
             'apellidos'        => 'sometimes|string|max:100',
-            'telefono'         => 'nullable|string|max:20',
+            'telefono'         => 'nullable|regex:/^\d{9}$/',
             'fecha_nacimiento' => 'nullable|date',
             'password'         => 'nullable|string|min:6',
         ]);
