@@ -1,41 +1,78 @@
-# Psicologia Velez
-## Tematica
- - Psicologia 
+# Psicología Vélez
+
+## Temática
+
+Aplicación web para la gestión de citas de una clínica de psicología. Permite a los clientes consultar los psicólogos y servicios disponibles, reservar citas y gestionar su perfil. El administrador dispone de un panel completo para gestionar psicólogos, servicios, usuarios y citas.
+
 ## Objetivos
- - Es una aplicacion que sirve para gestionar las citas de una psicologia
+
+- Ofrecer a los clientes una plataforma donde puedan ver los psicólogos y servicios de la clínica, reservar citas y llevar un seguimiento de su historial.
+- Proporcionar al administrador herramientas para gestionar de forma centralizada todos los recursos de la clínica.
+- Implementar un sistema de autenticación seguro con recuperación de contraseña por correo electrónico.
+
 ## Funcionalidades
-- Roles
-  - Admin: Podra ver todas las citas gestion
-  - Cliente: Podra ver sus citas
-- Vistas:
-  - Home
-  - Gestion de citas: lleva un historico y creacion de vista
-  - Login
-  - Register
-  - Nosotros
-  - Contacto
-  - CRUD usuario y citas
-  - CRUD Perfil
-## Arquitectura/Tecnología
- - Frontend:
-   - Figma para prototipado
-   - React
-   - Module CSS
-   - Librerias: esto hay que completarlo..
- - Backend:
-   - Laravel
-   - ORM: Eloquent
-   - Base de datos: MySql
- - Despliegue:
-   - Docker
-   - AWS Amazon
-## [Esquema entida-relación](https://github.com/aporcam0410/TFGdaw2/wiki/Modelo-Entidad-Relaci%C3%B3n)
 
-## [Documentación técnica](https://github.com/aporcam0410/TFGdaw2/wiki/DOCUMENTACI%C3%93N-T%C3%89CNICA)
+### Roles
 
-## [Bitacora del proyecto](https://github.com/aporcam0410/TFGdaw2/wiki/BIT%C3%81CORA-DEL-PROYECTO)
+| Rol | Descripción |
+|---|---|
+| **Admin** | Acceso completo: gestión de psicólogos, servicios, usuarios y citas de todos los clientes |
+| **Cliente** | Puede consultar psicólogos y servicios, reservar citas, ver su historial y editar su perfil |
+
+### Vistas
+
+| Vista | Rol |
+|---|---|
+| Inicio | Pública |
+| Nosotros | Pública |
+| Psicólogos | Pública |
+| Contacto | Pública |
+| Login | Pública |
+| Registro | Pública |
+| Olvidar contraseña | Pública |
+| Restablecer contraseña | Pública |
+| Mis citas | Cliente / Admin |
+| Agendar cita | Cliente / Admin |
+| Perfil | Cliente / Admin |
+| Panel de administración | Admin |
+
+## Arquitectura / Tecnología
+
+### Frontend
+
+- **Enrutamiento:** React Router DOM 6
+- **Peticiones HTTP:** Axios 1.7
+- **Estilos:** CSS Modules
+- **Prototipado:** Figma
+
+### Backend
+
+- **Framework:** Laravel 12
+- **ORM:** Eloquent
+- **Base de datos:** MySQL (AWS Aurora RDS)
+- **Autenticación:** Laravel Sanctum (tokens de API)
+- **Correo:** Symfony Mailer + SMTP Gmail (envío de enlaces de recuperación de contraseña)
+
+### Despliegue
+
+- **Local:** Docker (contenedores para frontend y backend)
+- **Backend:** AWS EC2 — Nginx + PHP-FPM 8.4
+- **Frontend:** Vercel — [psicologiavelez.vercel.app](https://psicologiavelez.vercel.app)
+- **Base de datos:** AWS Aurora RDS (MySQL)
+
+### Documentación
+
+- [Esquema Entidad-Relación](https://github.com/aporcam0410/TFGdaw2/wiki/Modelo-Entidad-Relaci%C3%B3n)
+- [Documentación técnica](https://github.com/aporcam0410/TFGdaw2/wiki/DOCUMENTACI%C3%93N-T%C3%89CNICA)
+- [Bitácora del proyecto](https://github.com/aporcam0410/TFGdaw2/wiki/BIT%C3%81CORA-DEL-PROYECTO)
 
 ## Bibliografía
 
+- [Documentación de Laravel](https://laravel.com/docs)
+- [Documentación de React](https://react.dev)
+- [Documentación de Vercel](https://vercel.com/docs)
+- [Documentación de AWS EC2](https://docs.aws.amazon.com/ec2)
+
 ## Autor
- - Antonio Gabriel Portillo Campos
+
+Antonio Gabriel Portillo Campos
