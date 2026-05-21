@@ -69,9 +69,21 @@ Aplicación web para la gestión de citas de una clínica de psicología. Permit
 ## Bibliografía
 
 - [Documentación de Laravel](https://laravel.com/docs)
+- [Documentación de Laravel Sanctum](https://laravel.com/docs/sanctum)
 - [Documentación de React](https://react.dev)
+- [Documentación de React Router](https://reactrouter.com/en/main)
+- [Documentación de Axios](https://axios-http.com/docs/intro)
+- [Documentación de Vite](https://vitejs.dev/guide)
 - [Documentación de Vercel](https://vercel.com/docs)
 - [Documentación de AWS EC2](https://docs.aws.amazon.com/ec2)
+- [Documentación de Docker](https://docs.docker.com)
+- [Documentación de Nginx](https://nginx.org/en/docs)
+
+## Enlaces del proyecto
+
+- [Diseño en Figma](https://www.figma.com/design/gj30SYNzh5wc5rFCnxZOe6/Proyecto-TFG-Psicologia?node-id=0-1&p=f&t=yxRlc2NeaNwKi69n-0)
+- [Vídeo demostrativo](#)
+- [Web desplegada](https://psicologiavelez.vercel.app)
 
 ## Autor
 
